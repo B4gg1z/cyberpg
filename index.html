@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CyberPG</title>
+  <style>
+    :root {
+      --bg: #08111a;
+      --panel: rgba(10, 20, 31, 0.92);
+      --panel-2: rgba(16, 32, 48, 0.95);
+      --line: rgba(122, 203, 255, 0.25);
+      --accent: #7acbff;
+      --accent-2: #ffe18f;
+      --danger: #ff7f7f;
+      --good: #7fffb2;
+      --muted: #8aa5bb;
+      --wall: #203244;
+      --floor: #13202c;
+      --floor-2: #101923;
+      --exit: #5fb5ff;
+      --potion: #e24f7c;
+      --hero: #f4f2cf;
+      --enemy: #de8d62;
+      --enemy-2: #b85f4d;
+      --shadow: rgba(0,0,0,0.56);
+      --tile-size: min(calc((100vw - 360px) / 16), calc((100vh - 180px) / 12), 48px);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+        radial-gradient(circle at top, #18314b 0%, #0a1420 38%, #05080d 100%);
+      color: #edf7ff;
+      overflow: hidden;
+    }
+
+    .app {
+      min-height: 100%;
+      display: grid;
+      grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.34);
+      backdrop-filter: blur(8px);
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      padding: 18px;
+      gap: 14px;
+      min-height: 0;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      line-height: 0.95;
+      margin: 0;
+      letter-spacing: 0.04em;
+    }
+
+    .sub {
+      color: #bfd3e5;
+      line-height: 1.4;
+      margin: 0;
+      font-size: 0.96rem;
+    }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      border: 1px solid var(--line);
+      color: #dcefff;
+      background: rgba(26, 49, 73, 0.72);
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stat-card {
+      background: var(--panel-2);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 14px;
+      padding: 10px 12px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 5px;
+    }
+
+    .stat-value { font-size: 1.02rem; font-weight: 700; }
+
+    .log {
+      flex: 1;
+      min-height: 120px;
+      overflow: auto;
+      background: rgba(0,0,0,0.14);
+      border-radius: 14px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+    .log-entry {
+      color: #d5e8f7;
+      font-size: 0.92rem;
+      line-height: 1.35;
+      margin-bottom: 8px;
+    }
+    .log-entry:last-child { margin-bottom: 0; }
+
+    .controls {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .main {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 18px;
+    }
+
+    .status-line {
+      color: #cfe7fb;
+      font-size: 0.95rem;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid rgba(122,203,255,0.45);
+      background: rgba(18, 43, 66, 0.96);
+      color: #f2fbff;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.12s ease, background 0.12s ease;
+    }
+    button:hover { transform: translateY(-1px); background: rgba(24, 56, 85, 1); }
+
+    .board-wrap {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      place-items: center;
+      padding: 10px;
+    }
+
+    .board-shell {
+      width: fit-content;
+      max-width: 100%;
+      padding: 16px;
+      background: rgba(4, 10, 16, 0.72);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(16, var(--tile-size));
+      grid-template-rows: repeat(12, var(--tile-size));
+      gap: 2px;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .tile {
+      width: var(--tile-size);
+      height: var(--tile-size);
+      display: grid;
+      place-items: center;
+      font-size: calc(var(--tile-size) * 0.54);
+      border-radius: 6px;
+      position: relative;
+      transition: filter 0.1s ease, opacity 0.1s ease;
+    }
+
+    .wall { background: linear-gradient(180deg, #2a4158 0%, #182633 100%); }
+    .floor { background: linear-gradient(180deg, var(--floor) 0%, var(--floor-2) 100%); }
+    .exit { background: linear-gradient(180deg, #18395b 0%, #0f2235 100%); }
+    .exit::after {
+      content: "⇣";
+      color: #79c8ff;
+      font-size: calc(var(--tile-size) * 0.5);
+      opacity: 0.85;
+    }
+    .potion::after {
+      content: "!";
+      color: #ffd7e2;
+      font-size: calc(var(--tile-size) * 0.48);
+      font-weight: 800;
+      text-shadow: 0 0 10px rgba(226,79,124,0.8);
+    }
+
+    .actor::after {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.45);
+    }
+    .hero::after { content: "@"; color: var(--hero); }
+    .rat::after { content: "r"; color: var(--enemy); }
+    .guard::after { content: "g"; color: var(--enemy-2); }
+    .dead { opacity: 0.35; }
+
+    .dim { filter: brightness(0.42) saturate(0.7); }
+    .dark { opacity: 0.16; filter: brightness(0.2); }
+    .flash { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.12), 0 0 18px rgba(255, 225, 143, 0.35); }
+
+    .footer-note {
+      color: var(--muted);
+      text-align: center;
+      font-size: 0.84rem;
+      padding-bottom: 4px;
+    }
+
+    @media (max-width: 980px) {
+      :root { --tile-size: min(calc((100vw - 40px) / 16), calc((58vh - 22px) / 12), 38px); }
+      .app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; overflow: auto; }
+      .sidebar { order: 2; }
+      .main { order: 1; }
+      .board-wrap { padding: 0; }
+    }
+
+    @media (max-height: 760px) {
+      :root { --tile-size: min(calc((100vw - 360px) / 16), calc((100vh - 200px) / 12), 42px); }
+      .sidebar { gap: 10px; padding: 14px; }
+      .topbar { padding: 12px 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar panel">
+      <div class="eyebrow">CyberPG reboot</div>
+      <h1>One Room.<br/>Do It Right.</h1>
+      <p class="sub">A fresh Shattered Pixel Dungeon-inspired test slice: turn-based, readable, tactical, and small enough to judge honestly.</p>
+
+      <div class="chips">
+        <div class="chip">Turn-based</div>
+        <div class="chip">One room</div>
+        <div class="chip">Grid tactics</div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Hero HP</div><div id="heroHp" class="stat-value">12 / 12</div></div>
+        <div class="stat-card"><div class="stat-label">Attack</div><div id="heroAtk" class="stat-value">3-5</div></div>
+        <div class="stat-card"><div class="stat-label">Enemies</div><div id="enemyCount" class="stat-value">2</div></div>
+        <div class="stat-card"><div class="stat-label">Objective</div><div id="objective" class="stat-value">Clear room</div></div>
+      </div>
+
+      <div id="log" class="log"></div>
+
+      <div class="controls">
+        <strong>Controls</strong><br/>
+        WASD / Arrow keys: move or attack<br/>
+        Space: wait a turn<br/>
+        R: restart room
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar panel">
+        <div id="statusLine" class="status-line">Kill the enemies, then step onto the blue exit.</div>
+        <div class="button-row">
+          <button id="restartBtn" type="button">Restart room</button>
+        </div>
+      </div>
+
+      <div class="board-wrap panel">
+        <div class="board-shell">
+          <div id="board" class="board" aria-label="CyberPG room"></div>
+        </div>
+      </div>
+
+      <div class="footer-note">Prototype target: tactical room feel before any bigger scope.</div>
+    </main>
+  </div>
+
+  <script>
+    const width = 16;
+    const height = 12;
+
+    const mapRows = [
+      "################",
+      "#..............#",
+      "#..####........#",
+      "#..#..#....!...#",
+      "#..#..#........#",
+      "#..#..####..g..#",
+      "#..#...........#",
+      "#..####.....####",
+      "#.....#........#",
+      "#.@...#..r.....#",
+      "#............E.#",
+      "################"
+    ];
+
+    const board = document.getElementById('board');
+    const logEl = document.getElementById('log');
+    const heroHpEl = document.getElementById('heroHp');
+    const heroAtkEl = document.getElementById('heroAtk');
+    const enemyCountEl = document.getElementById('enemyCount');
+    const objectiveEl = document.getElementById('objective');
+    const statusLineEl = document.getElementById('statusLine');
+    const restartBtn = document.getElementById('restartBtn');
+
+    const floorGlyphs = ['·', '·', '·', '·', ' '];
+    let state;
+
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function freshState() {
+      const tiles = [];
+      const enemies = [];
+      let hero = null;
+      let exit = null;
+      let potion = null;
+
+      for (let y = 0; y < height; y += 1) {
+        for (let x = 0; x < width; x += 1) {
+          const ch = mapRows[y][x];
+          let type = 'floor';
+          if (ch === '#') type = 'wall';
+          if (ch === 'E') { type = 'exit'; exit = { x, y, unlocked: false }; }
+          if (ch === '!') { type = 'floor'; potion = { x, y, used: false }; }
+          if (ch === '@') { type = 'floor'; hero = { x, y, hp: 12, maxHp: 12, minAtk: 3, maxAtk: 5, potions: 0 }; }
+          if (ch === 'r') {
+            type = 'floor';
+            enemies.push({ id: crypto.randomUUID(), kind: 'rat', name: 'Sewer Rat', x, y, hp: 5, maxHp: 5, minAtk: 1, maxAtk: 2, alive: true });
+          }
+          if (ch === 'g') {
+            type = 'floor';
+            enemies.push({ id: crypto.randomUUID(), kind: 'guard', name: 'Fallen Guard', x, y, hp: 8, maxHp: 8, minAtk: 2, maxAtk: 3, alive: true });
+          }
+          tiles.push({ x, y, type, glyph: floorGlyphs[(x * 7 + y * 3) % floorGlyphs.length] });
+        }
+      }
+
+      return {
+        tiles,
+        hero,
+        enemies,
+        exit,
+        potion,
+        gameOver: false,
+        victory: false,
+        turn: 1,
+        flash: null,
+        logs: [
+          'You step into a single test chamber. Two enemies. One exit. No excuses.',
+          'Shattered-inspired rule: every move matters.'
+        ]
+      };
+    }
+
+    function tileAt(x, y) {
+      return state.tiles.find(t => t.x === x && t.y === y);
+    }
+
+    function enemyAt(x, y) {
+      return state.enemies.find(e => e.alive && e.x === x && e.y === y);
+    }
+
+    function inBounds(x, y) {
+      return x >= 0 && x < width && y >= 0 && y < height;
+    }
+
+    function log(msg) {
+      state.logs.unshift(msg);
+      state.logs = state.logs.slice(0, 10);
+    }
+
+    function setFlash(x, y) {
+      state.flash = `${x},${y}`;
+      window.clearTimeout(setFlash._t);
+      setFlash._t = window.setTimeout(() => {
+        state.flash = null;
+        render();
+      }, 110);
+    }
+
+    function distance(a, b) {
+      return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+    }
+
+    function isPassable(x, y) {
+      if (!inBounds(x, y)) return false;
+      const tile = tileAt(x, y);
+      if (!tile || tile.type === 'wall') return false;
+      if (state.hero.x === x && state.hero.y === y) return false;
+      if (enemyAt(x, y)) return false;
+      return true;
+    }
+
+    function attack(attacker, defender, source) {
+      const dmg = randInt(attacker.minAtk, attacker.maxAtk);
+      defender.hp = Math.max(0, defender.hp - dmg);
+      setFlash(defender.x, defender.y);
+      log(`${source} hits ${defender.name ?? 'you'} for ${dmg}.`);
+      if (defender.hp <= 0) {
+        if (defender === state.hero) {
+          state.gameOver = true;
+          log('You collapse in the room. R to restart.');
+        } else {
+          defender.alive = false;
+          log(`${defender.name} falls.`);
+        }
+      }
+    }
+
+    function maybePickupPotion() {
+      if (!state.potion || state.potion.used) return;
+      if (state.hero.x === state.potion.x && state.hero.y === state.potion.y) {
+        state.potion.used = true;
+        const heal = Math.min(state.hero.maxHp - state.hero.hp, 5);
+        state.hero.hp += heal;
+        log(`You drink the crimson tonic and recover ${heal} HP.`);
+      }
+    }
+
+    function updateExitState() {
+      const alive = state.enemies.filter(e => e.alive).length;
+      state.exit.unlocked = alive === 0;
+      if (state.exit.unlocked) {
+        objectiveEl.textContent = 'Reach exit';
+      }
+    }
+
+    function heroStep(dx, dy) {
+      if (state.gameOver || state.victory) return;
+      const nx = state.hero.x + dx;
+      const ny = state.hero.y + dy;
+      if (!inBounds(nx, ny)) return;
+
+      const foe = enemyAt(nx, ny);
+      if (foe) {
+        attack(state.hero, foe, 'You');
+        endTurn();
+        return;
+      }
+
+      const tile = tileAt(nx, ny);
+      if (!tile || tile.type === 'wall') {
+        log('Stone blocks the way.');
+        return;
+      }
+
+      if (tile.type === 'exit' && !state.exit.unlocked) {
+        log('The exit stays sealed until the room is clear.');
+        return;
+      }
+
+      state.hero.x = nx;
+      state.hero.y = ny;
+      maybePickupPotion();
+
+      if (tile.type === 'exit' && state.exit.unlocked) {
+        state.victory = true;
+        log('Room clear. This is the first honest step of the reboot.');
+        statusLineEl.textContent = 'Victory. The one-room slice works.';
+        render();
+        return;
+      }
+
+      endTurn();
+    }
+
+    function enemyTurn(enemy) {
+      if (!enemy.alive || state.gameOver || state.victory) return;
+      const hero = state.hero;
+      if (distance(enemy, hero) === 1) {
+        attack(enemy, hero, enemy.name);
+        return;
+      }
+
+      const moves = [
+        { x: enemy.x + Math.sign(hero.x - enemy.x), y: enemy.y },
+        { x: enemy.x, y: enemy.y + Math.sign(hero.y - enemy.y) },
+        { x: enemy.x + Math.sign(hero.x - enemy.x), y: enemy.y + Math.sign(hero.y - enemy.y) }
+      ];
+
+      for (const move of moves) {
+        if (isPassable(move.x, move.y)) {
+          enemy.x = move.x;
+          enemy.y = move.y;
+          return;
+        }
+      }
+    }
+
+    function endTurn() {
+      updateExitState();
+      for (const enemy of state.enemies) enemyTurn(enemy);
+      updateExitState();
+      state.turn += 1;
+      render();
+    }
+
+    function fovClass(x, y) {
+      const d = Math.abs(x - state.hero.x) + Math.abs(y - state.hero.y);
+      if (d <= 4) return '';
+      if (d <= 6) return 'dim';
+      return 'dark';
+    }
+
+    function render() {
+      board.innerHTML = '';
+      updateExitState();
+
+      for (const tile of state.tiles) {
+        const el = document.createElement('div');
+        const classes = ['tile', tile.type === 'wall' ? 'wall' : 'floor'];
+        if (tile.type === 'exit') classes.push('exit');
+        if (state.potion && !state.potion.used && tile.x === state.potion.x && tile.y === state.potion.y) classes.push('potion');
+        const foe = enemyAt(tile.x, tile.y);
+        if (foe) classes.push('actor', foe.kind);
+        if (state.hero.x === tile.x && state.hero.y === tile.y) classes.push('actor', 'hero');
+        if (state.flash === `${tile.x},${tile.y}`) classes.push('flash');
+        const fog = fovClass(tile.x, tile.y);
+        if (fog) classes.push(fog);
+        el.className = classes.join(' ');
+        if (tile.type === 'floor' && !foe && !(state.hero.x === tile.x && state.hero.y === tile.y) && !(state.potion && !state.potion.used && tile.x === state.potion.x && tile.y === state.potion.y)) {
+          el.textContent = tile.glyph;
+          el.style.color = 'rgba(145,170,190,0.14)';
+        }
+        board.appendChild(el);
+      }
+
+      logEl.innerHTML = state.logs.map(msg => `<div class="log-entry">${msg}</div>`).join('');
+      heroHpEl.textContent = `${state.hero.hp} / ${state.hero.maxHp}`;
+      heroAtkEl.textContent = `${state.hero.minAtk}-${state.hero.maxAtk}`;
+      enemyCountEl.textContent = String(state.enemies.filter(e => e.alive).length);
+      objectiveEl.textContent = state.victory ? 'Complete' : state.exit.unlocked ? 'Reach exit' : 'Clear room';
+
+      if (!state.victory && !state.gameOver) {
+        statusLineEl.textContent = state.exit.unlocked
+          ? 'The exit unlocks blue. Step onto it to finish the room.'
+          : 'Clear the enemies. Positioning matters more than rushing.';
+      } else if (state.gameOver) {
+        statusLineEl.textContent = 'Defeat. Restart and try a cleaner route.';
+      }
+    }
+
+    function resetGame() {
+      state = freshState();
+      render();
+    }
+
+    window.addEventListener('keydown', (event) => {
+      const key = event.key.toLowerCase();
+      if (['arrowup','arrowdown','arrowleft','arrowright','w','a','s','d',' ','r'].includes(key) || ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(event.key)) {
+        event.preventDefault();
+      }
+      if (key === 'w' || event.key === 'ArrowUp') heroStep(0, -1);
+      else if (key === 's' || event.key === 'ArrowDown') heroStep(0, 1);
+      else if (key === 'a' || event.key === 'ArrowLeft') heroStep(-1, 0);
+      else if (key === 'd' || event.key === 'ArrowRight') heroStep(1, 0);
+      else if (key === ' ') { if (!state.gameOver && !state.victory) { log('You wait and listen.'); endTurn(); } }
+      else if (key === 'r') resetGame();
+    });
+
+    restartBtn.addEventListener('click', resetGame);
+    resetGame();
+  </script>
+</body>
+</html>
