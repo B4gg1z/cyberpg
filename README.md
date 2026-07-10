@@ -40,4 +40,4 @@ Shattered Pixel Dungeon feel to chase in the reboot:
 - strong tile readability over flashy effects
 
 ## Current status
-- current project: CyberPG v0.1.2 one-room prototype with fog-of-war, key/chest/exit arc, stronger enemy pressure, and a chest relic payoff.
+- current project: CyberPG v0.1.4 one-room prototype with fog-of-war, threat telegraphs, combat popoffs, alarm reinforcements, and a post-room legacy reward choice for the next run.

@@ -211,11 +211,28 @@
       width: fit-content;
       max-width: 100%;
       padding: 16px;
-      background: rgba(4, 10, 16, 0.72);
+      background:
+        radial-gradient(circle at top, rgba(122, 203, 255, 0.08), rgba(4, 10, 16, 0.82)),
+        linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
       border: 1px solid rgba(255,255,255,0.06);
       border-radius: 18px;
       box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+      position: relative;
+      overflow: hidden;
     }
+    .board-shell::before {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      border-radius: 12px;
+      background:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: calc(var(--tile-size) / 2) calc(var(--tile-size) / 2);
+      opacity: 0.26;
+      pointer-events: none;
+    }
+    .board-shell.shake { animation: boardshake 170ms linear 1; }
 
     .board {
       display: grid;
@@ -276,8 +293,22 @@
     .rat::after { content: "r"; color: var(--rat); }
     .guard::after { content: "g"; color: var(--guard); }
     .seer::after { content: "s"; color: var(--seer); }
+    .hunter::after { content: "h"; color: #ffb86b; }
 
-    .flash { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.16), 0 0 18px rgba(255, 225, 143, 0.35); }
+    .flash { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.16), 0 0 18px rgba(255, 225, 143, 0.35); transform: scale(1.05); }
+    .impact {
+      position: absolute;
+      top: 4px;
+      right: 3px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: #ffd07d;
+      text-shadow: 0 0 10px rgba(255, 150, 90, 0.45);
+      animation: floatup 420ms ease-out forwards;
+      pointer-events: none;
+    }
+    .impact.enemy { color: #ff8f8f; }
+    .impact.heal { color: #8dffb2; }
     .threat { box-shadow: inset 0 0 0 2px rgba(255, 122, 122, 0.28), 0 0 12px rgba(255, 90, 90, 0.18); }
     .hpbar {
       position: absolute;
@@ -343,6 +374,34 @@
       line-height: 1.45;
       margin-bottom: 16px;
     }
+    .reward-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .reward-btn {
+      text-align: left;
+      white-space: normal;
+      line-height: 1.35;
+    }
+    .reward-btn small {
+      display: block;
+      opacity: 0.74;
+      margin-top: 3px;
+    }
+
+    @keyframes floatup {
+      0% { opacity: 0; transform: translateY(6px) scale(0.94); }
+      20% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-12px) scale(1.04); }
+    }
+    @keyframes boardshake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      50% { transform: translateX(3px); }
+      75% { transform: translateX(-2px); }
+    }
 
     @media (max-width: 980px) {
       :root { --tile-size: min(calc((100vw - 40px) / 16), calc((58vh - 22px) / 12), 38px); }
@@ -362,7 +421,7 @@
 <body>
   <div class="app">
     <aside class="sidebar panel">
-      <div class="eyebrow">CyberPG v0.1.3</div>
+      <div class="eyebrow">CyberPG v0.1.4</div>
       <h1>One Room.<br/>Sharper Teeth.</h1>
       <p class="sub">A tougher Shattered Pixel Dungeon-inspired room: scout in the dark, grab the key, crack the chest, claim Volt Fang, survive the pressure, then escape.</p>
 
@@ -380,6 +439,7 @@
         <div class="stat-card"><div class="stat-label">Key</div><div id="keyStatus" class="stat-value">Missing</div></div>
         <div class="stat-card"><div class="stat-label">Chest</div><div id="chestStatus" class="stat-value">Sealed</div></div>
         <div class="stat-card"><div class="stat-label">Relic</div><div id="relicStatus" class="stat-value">None</div></div>
+        <div class="stat-card"><div class="stat-label">Legacy</div><div id="legacyStatus" class="stat-value">None</div></div>
         <div class="stat-card"><div class="stat-label">Turn</div><div id="turnStatus" class="stat-value">1</div></div>
       </div>
 
@@ -421,9 +481,10 @@
 
   <div id="overlay" class="overlay">
     <div class="overlay-card">
-      <div class="overlay-kicker">CyberPG v0.1.3</div>
+      <div class="overlay-kicker">CyberPG v0.1.4</div>
       <div id="overlayTitle" class="overlay-title">Room complete</div>
       <div id="overlayBody" class="overlay-body"></div>
+      <div id="rewardGrid" class="reward-grid"></div>
       <div class="button-row">
         <button id="overlayRestartBtn" type="button">Run it back</button>
       </div>
@@ -450,6 +511,7 @@
     ];
 
     const board = document.getElementById('board');
+    const boardShell = document.querySelector('.board-shell');
     const logEl = document.getElementById('log');
     const heroHpEl = document.getElementById('heroHp');
     const heroAtkEl = document.getElementById('heroAtk');
@@ -458,6 +520,7 @@
     const keyStatusEl = document.getElementById('keyStatus');
     const chestStatusEl = document.getElementById('chestStatus');
     const relicStatusEl = document.getElementById('relicStatus');
+    const legacyStatusEl = document.getElementById('legacyStatus');
     const turnStatusEl = document.getElementById('turnStatus');
     const statusLineEl = document.getElementById('statusLine');
     const restartBtn = document.getElementById('restartBtn');
@@ -465,13 +528,37 @@
     const overlayEl = document.getElementById('overlay');
     const overlayTitleEl = document.getElementById('overlayTitle');
     const overlayBodyEl = document.getElementById('overlayBody');
+    const rewardGridEl = document.getElementById('rewardGrid');
     const overlayRestartBtn = document.getElementById('overlayRestartBtn');
 
     const floorGlyphs = ['·', '·', '·', '·', ' '];
+    const rewardChoices = [
+      { id: 'heart', label: 'Feral Heart', desc: '+4 max HP next run', apply(hero) { hero.maxHp += 4; hero.hp += 4; } },
+      { id: 'edge', label: 'Razor Edge', desc: '+1 min / +1 max attack next run', apply(hero) { hero.minAtk += 1; hero.maxAtk += 1; } },
+      { id: 'tonic', label: 'Smuggled Tonic', desc: 'Start with a free heal flask next run', apply(hero, state) { state.potion = { x: hero.x + 1, y: hero.y, used: false, bonus: true }; } }
+    ];
     let state;
 
     function randInt(min, max) {
       return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function getStoredBoon() {
+      try {
+        return localStorage.getItem('cyberpg_reward_choice') || 'none';
+      } catch {
+        return 'none';
+      }
+    }
+
+    function setStoredBoon(id) {
+      try {
+        localStorage.setItem('cyberpg_reward_choice', id);
+      } catch {}
+    }
+
+    function boonLabel(id) {
+      return rewardChoices.find(choice => choice.id === id)?.label || 'None';
     }
 
     function freshState() {
@@ -502,12 +589,16 @@
           if (ch === 's') {
             enemies.push({ id: crypto.randomUUID(), kind: 'seer', name: 'Wire Seer', x, y, hp: 6, maxHp: 6, minAtk: 2, maxAtk: 4, alive: true, alert: false, range: 5 });
           }
+          if (ch === 'h') {
+            enemies.push({ id: crypto.randomUUID(), kind: 'hunter', name: 'Vault Hunter', x, y, hp: 7, maxHp: 7, minAtk: 2, maxAtk: 4, alive: true, alert: false });
+          }
           tiles.push({ x, y, type, glyph: floorGlyphs[(x * 7 + y * 3) % floorGlyphs.length] });
         }
       }
 
       const discovered = new Set([`${hero.x},${hero.y}`]);
-      return {
+      const storedBoon = getStoredBoon();
+      const runState = {
         tiles,
         hero,
         enemies,
@@ -526,8 +617,17 @@
           'This room has a little spine now. Don’t drift. Read it.',
           'Find the key, open the chest, take the sigil, then earn the exit.'
         ],
-        alarmRaised: false
+        alarmRaised: false,
+        floaters: [],
+        chosenReward: null,
+        storedBoon
       };
+      const boon = rewardChoices.find(choice => choice.id === storedBoon);
+      if (boon) {
+        boon.apply(runState.hero, runState);
+        runState.logs.unshift(`Legacy active: ${boon.label}.`);
+      }
+      return runState;
     }
 
     function tileAt(x, y) {
@@ -554,6 +654,23 @@
         state.flash = null;
         render();
       }, 120);
+    }
+
+    function pushFloater(x, y, text, kind = '') {
+      const id = crypto.randomUUID();
+      state.floaters.push({ id, x, y, text, kind });
+      window.setTimeout(() => {
+        state.floaters = state.floaters.filter(f => f.id !== id);
+        render();
+      }, 420);
+    }
+
+    function shakeBoard() {
+      boardShell.classList.remove('shake');
+      void boardShell.offsetWidth;
+      boardShell.classList.add('shake');
+      window.clearTimeout(shakeBoard._t);
+      shakeBoard._t = window.setTimeout(() => boardShell.classList.remove('shake'), 190);
     }
 
     function distance(a, b) {
@@ -608,6 +725,8 @@
       const dmg = randInt(attacker.minAtk, attacker.maxAtk) + bonus;
       defender.hp = Math.max(0, defender.hp - dmg);
       setFlash(defender.x, defender.y);
+      pushFloater(defender.x, defender.y, `-${dmg}`, defender === state.hero ? 'enemy' : '');
+      if (defender === state.hero) shakeBoard();
       log(`${source} ${verb} ${defender.name ?? 'you'} for ${dmg}.`);
       if (defender.hp <= 0) {
         if (defender === state.hero) {
@@ -630,6 +749,7 @@
         state.potion.used = true;
         const heal = Math.min(state.hero.maxHp - state.hero.hp, 5);
         state.hero.hp += heal;
+        if (heal > 0) pushFloater(state.hero.x, state.hero.y, `+${heal}`, 'heal');
         log(`You drink the crimson tonic and recover ${heal} HP.`);
       }
       if (state.chest && !state.chest.opened && state.hero.x === state.chest.x && state.hero.y === state.chest.y && state.hero.hasKey) {
@@ -641,7 +761,11 @@
         state.hero.minAtk = 4;
         state.hero.maxAtk = 7;
         state.alarmRaised = true;
+        if (!state.enemies.some(enemy => enemy.kind === 'hunter' && enemy.alive)) {
+          state.enemies.push({ id: crypto.randomUUID(), kind: 'hunter', name: 'Vault Hunter', x: 13, y: 1, hp: 7, maxHp: 7, minAtk: 2, maxAtk: 4, alive: true, alert: true });
+        }
         for (const enemy of state.enemies) enemy.alert = true;
+        shakeBoard();
         log('The chest cracks open. Inside: Volt Fang and the exit sigil. An alarm bites back through the chamber.');
       }
     }
@@ -713,6 +837,7 @@
       if (!enemy.alert && !seesHero) return `${enemy.name}: lurking`;
       if (enemy.kind === 'seer' && seesHero && (enemy.x === hero.x || enemy.y === hero.y) && dist <= enemy.range) return `${enemy.name}: zap line`;
       if (enemy.kind === 'guard' && seesHero && dist === enemy.lungeRange && clearStraightLine(enemy.x, enemy.y, hero.x, hero.y)) return `${enemy.name}: lunge setup`;
+      if (enemy.kind === 'hunter' && seesHero && dist <= 3) return `${enemy.name}: rushdown`;
       if (dist === 1) {
         const packBonus = enemy.kind === 'rat' && state.enemies.some(other => other !== enemy && other.alive && distance(other, hero) === 1);
         return `${enemy.name}: ${packBonus ? 'pack bite' : 'melee hit'}`;
@@ -739,16 +864,34 @@
       if (state.victory) {
         overlayEl.classList.add('show');
         overlayTitleEl.textContent = 'Room Cleared';
-        overlayBodyEl.textContent = `You escaped in ${state.turn} turns with ${state.hero.hp}/${state.hero.maxHp} HP and ${state.hero.relic}.`;
+        overlayBodyEl.textContent = `You escaped in ${state.turn} turns with ${state.hero.hp}/${state.hero.maxHp} HP and ${state.hero.relic}. Choose one legacy for the next run.`;
+        rewardGridEl.innerHTML = rewardChoices.map(choice => `
+          <button class="reward-btn" type="button" data-reward="${choice.id}">
+            ${choice.label}
+            <small>${choice.desc}</small>
+          </button>
+        `).join('');
+        rewardGridEl.querySelectorAll('[data-reward]').forEach(btn => {
+          btn.addEventListener('click', () => chooseReward(btn.dataset.reward));
+        });
         return;
       }
       if (state.gameOver) {
         overlayEl.classList.add('show');
         overlayTitleEl.textContent = 'Run Broken';
         overlayBodyEl.textContent = `You made it ${state.turn} turns. Try a cleaner route, safer corners, and better timing before opening the chest.`;
+        rewardGridEl.innerHTML = '';
         return;
       }
       overlayEl.classList.remove('show');
+      rewardGridEl.innerHTML = '';
+    }
+
+    function chooseReward(id) {
+      state.chosenReward = id;
+      setStoredBoon(id);
+      log(`Legacy locked in: ${boonLabel(id)} for the next run.`);
+      resetGame();
     }
 
     function reconstructStep(cameFrom, startKey, goalKey) {
@@ -839,7 +982,7 @@
       updateExitState();
       if (tile.type === 'exit' && state.exit.unlocked) {
         state.victory = true;
-        log('You leave with the sigil. That feels like the right shape for a first slice.');
+        log('You leave with the sigil. Choose what kind of sharper monster you become next run.');
         render();
         return;
       }
@@ -881,7 +1024,8 @@
 
       if (dist === 1) {
         const packBonus = enemy.kind === 'rat' && state.enemies.some(other => other !== enemy && other.alive && distance(other, hero) === 1) ? 1 : 0;
-        attack(enemy, hero, enemy.name, packBonus ? 'mauls' : 'hits', packBonus);
+        const hunterBonus = enemy.kind === 'hunter' && dist === 1 ? 1 : 0;
+        attack(enemy, hero, enemy.name, hunterBonus ? 'carves' : (packBonus ? 'mauls' : 'hits'), packBonus + hunterBonus);
         return;
       }
 
@@ -959,6 +1103,13 @@
           hpBar.appendChild(hpFill);
           el.appendChild(hpBar);
         }
+
+        for (const floater of state.floaters.filter(f => f.x === tile.x && f.y === tile.y)) {
+          const impact = document.createElement('div');
+          impact.className = `impact ${floater.kind}`.trim();
+          impact.textContent = floater.text;
+          el.appendChild(impact);
+        }
       }
 
       logEl.innerHTML = state.logs.map(msg => `<div class="log-entry">${msg}</div>`).join('');
@@ -969,6 +1120,7 @@
       keyStatusEl.textContent = state.hero.hasKey ? 'Taken' : 'Missing';
       chestStatusEl.textContent = state.hero.hasSigil ? 'Opened' : state.hero.hasKey ? 'Ready' : 'Sealed';
       relicStatusEl.textContent = state.hero.relic;
+      legacyStatusEl.textContent = boonLabel(state.storedBoon);
       turnStatusEl.textContent = String(state.turn);
       statusLineEl.textContent = statusText();
       renderIntentPanel();
