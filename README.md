@@ -40,4 +40,9 @@ Shattered Pixel Dungeon feel to chase in the reboot:
 - strong tile readability over flashy effects
 
 ## Current status
-- current project: CyberPG v0.1.4 one-room prototype with fog-of-war, threat telegraphs, combat popoffs, alarm reinforcements, and a post-room legacy reward choice for the next run.
+- current project: CyberPG v0.1.5 one-room prototype with original in-file actor silhouettes, a stronger start screen, threat telegraphs, combat popoffs, reinforcements, and a post-room legacy reward loop.
+
+## Asset / licensing posture
+- current visuals are authored directly in `index.html` as HTML/CSS shapes and gradients
+- no external sprite packs, marketplace art, or scraped/reference-derived game assets are bundled
+- safest public path from here: keep shipping either fully original art or assets with explicit commercial redistribution rights and written provenance
