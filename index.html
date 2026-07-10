@@ -257,11 +257,24 @@
     .seer::after { content: "s"; color: var(--seer); }
 
     .flash { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.16), 0 0 18px rgba(255, 225, 143, 0.35); }
-    .visible-dim { filter: brightness(0.62) saturate(0.8); }
-    .memory { opacity: 0.34; filter: grayscale(0.18) brightness(0.48); }
-    .unseen {
-      background: rgba(2, 5, 8, 0.95) !important;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.01);
+    .threat { box-shadow: inset 0 0 0 2px rgba(255, 122, 122, 0.28), 0 0 12px rgba(255, 90, 90, 0.18); }
+    .hpbar {
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      bottom: 8%;
+      height: 10%;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.55);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .hpfill {
+      height: 100%;
+      background: linear-gradient(90deg, #ff8a86 0%, #ffd08a 100%);
+    }
+    .hero .hpfill {
+      background: linear-gradient(90deg, #8ae8ff 0%, #d2fff1 100%);
     }
     .unseen::after { content: none !important; }
 
@@ -290,9 +303,9 @@
 <body>
   <div class="app">
     <aside class="sidebar panel">
-      <div class="eyebrow">CyberPG v0.1.1</div>
+      <div class="eyebrow">CyberPG v0.1.2</div>
       <h1>One Room.<br/>Sharper Teeth.</h1>
-      <p class="sub">A tougher Shattered Pixel Dungeon-inspired room: scout in the dark, grab the key, crack the chest, survive the pressure, then escape.</p>
+      <p class="sub">A tougher Shattered Pixel Dungeon-inspired room: scout in the dark, grab the key, crack the chest, claim Volt Fang, survive the pressure, then escape.</p>
 
       <div class="chips">
         <div class="chip">Turn-based</div>
@@ -307,6 +320,8 @@
         <div class="stat-card"><div class="stat-label">Objective</div><div id="objective" class="stat-value">Find key</div></div>
         <div class="stat-card"><div class="stat-label">Key</div><div id="keyStatus" class="stat-value">Missing</div></div>
         <div class="stat-card"><div class="stat-label">Chest</div><div id="chestStatus" class="stat-value">Sealed</div></div>
+        <div class="stat-card"><div class="stat-label">Relic</div><div id="relicStatus" class="stat-value">None</div></div>
+        <div class="stat-card"><div class="stat-label">Turn</div><div id="turnStatus" class="stat-value">1</div></div>
       </div>
 
       <div id="log" class="log"></div>
@@ -367,6 +382,8 @@
     const objectiveEl = document.getElementById('objective');
     const keyStatusEl = document.getElementById('keyStatus');
     const chestStatusEl = document.getElementById('chestStatus');
+    const relicStatusEl = document.getElementById('relicStatus');
+    const turnStatusEl = document.getElementById('turnStatus');
     const statusLineEl = document.getElementById('statusLine');
     const restartBtn = document.getElementById('restartBtn');
 
@@ -395,12 +412,12 @@
           if (ch === '!') { type = 'floor'; potion = { x, y, used: false }; }
           if (ch === 'K') { type = 'floor'; key = { x, y, taken: false }; }
           if (ch === 'C') { type = 'floor'; chest = { x, y, opened: false, hasSigil: true }; }
-          if (ch === '@') { type = 'floor'; hero = { x, y, hp: 14, maxHp: 14, minAtk: 3, maxAtk: 5, hasKey: false, hasSigil: false }; }
+          if (ch === '@') { type = 'floor'; hero = { x, y, hp: 14, maxHp: 14, minAtk: 3, maxAtk: 5, hasKey: false, hasSigil: false, relic: 'None' }; }
           if (ch === 'r') {
             enemies.push({ id: crypto.randomUUID(), kind: 'rat', name: 'Sewer Rat', x, y, hp: 5, maxHp: 5, minAtk: 1, maxAtk: 2, alive: true, alert: false });
           }
           if (ch === 'g') {
-            enemies.push({ id: crypto.randomUUID(), kind: 'guard', name: 'Fallen Guard', x, y, hp: 9, maxHp: 9, minAtk: 2, maxAtk: 3, alive: true, alert: false });
+            enemies.push({ id: crypto.randomUUID(), kind: 'guard', name: 'Fallen Guard', x, y, hp: 9, maxHp: 9, minAtk: 2, maxAtk: 3, alive: true, alert: false, lungeRange: 2 });
           }
           if (ch === 's') {
             enemies.push({ id: crypto.randomUUID(), kind: 'seer', name: 'Wire Seer', x, y, hp: 6, maxHp: 6, minAtk: 2, maxAtk: 4, alive: true, alert: false, range: 5 });
@@ -424,6 +441,7 @@
         flash: null,
         discovered,
         visible: new Set(),
+        threatTiles: new Set(),
         logs: [
           'This room has a little spine now. Don’t drift. Read it.',
           'Find the key, open the chest, take the sigil, then earn the exit.'
@@ -505,8 +523,8 @@
       state.visible = visible;
     }
 
-    function attack(attacker, defender, source, verb = 'hits') {
-      const dmg = randInt(attacker.minAtk, attacker.maxAtk);
+    function attack(attacker, defender, source, verb = 'hits', bonus = 0) {
+      const dmg = randInt(attacker.minAtk, attacker.maxAtk) + bonus;
       defender.hp = Math.max(0, defender.hp - dmg);
       setFlash(defender.x, defender.y);
       log(`${source} ${verb} ${defender.name ?? 'you'} for ${dmg}.`);
@@ -536,13 +554,51 @@
       if (state.chest && !state.chest.opened && state.hero.x === state.chest.x && state.hero.y === state.chest.y && state.hero.hasKey) {
         state.chest.opened = true;
         state.hero.hasSigil = true;
-        log('The chest cracks open. Inside: an exit sigil. Now you can truly leave.');
+        state.hero.relic = 'Volt Fang';
+        state.hero.maxHp += 2;
+        state.hero.hp = Math.min(state.hero.maxHp, state.hero.hp + 2);
+        state.hero.minAtk = 4;
+        state.hero.maxAtk = 7;
+        log('The chest cracks open. Inside: Volt Fang and the exit sigil. Your bite gets nastier.');
       }
     }
 
     function updateExitState() {
       const alive = state.enemies.filter(e => e.alive).length;
       state.exit.unlocked = alive === 0 && state.hero.hasSigil;
+    }
+
+    function clearStraightLine(x1, y1, x2, y2) {
+      if (x1 !== x2 && y1 !== y2) return false;
+      if (x1 === x2) {
+        const step = y2 > y1 ? 1 : -1;
+        for (let y = y1 + step; y !== y2; y += step) {
+          if (tileAt(x1, y)?.type === 'wall') return false;
+        }
+        return true;
+      }
+      const step = x2 > x1 ? 1 : -1;
+      for (let x = x1 + step; x !== x2; x += step) {
+        if (tileAt(x, y1)?.type === 'wall') return false;
+      }
+      return true;
+    }
+
+    function markThreatTiles() {
+      const threatTiles = new Set();
+      const hero = state.hero;
+      for (const enemy of state.enemies) {
+        if (!enemy.alive) continue;
+        const dist = distance(enemy, hero);
+        const seesHero = dist <= 7 && lineOfSight(enemy.x, enemy.y, hero.x, hero.y);
+        if (enemy.kind === 'seer' && seesHero && (enemy.x === hero.x || enemy.y === hero.y) && dist <= enemy.range) {
+          threatTiles.add(`${hero.x},${hero.y}`);
+        }
+        if (enemy.kind === 'guard' && seesHero && dist === enemy.lungeRange && clearStraightLine(enemy.x, enemy.y, hero.x, hero.y)) {
+          threatTiles.add(`${hero.x},${hero.y}`);
+        }
+      }
+      state.threatTiles = threatTiles;
     }
 
     function objectiveText() {
@@ -558,7 +614,10 @@
       if (state.gameOver) return 'Defeat. Reset and route the room better.';
       if (!state.hero.hasKey) return 'Scout the dark and secure the key first.';
       if (!state.hero.hasSigil) return 'Use the key on the chest. The exit still means nothing without the sigil.';
-      if (state.enemies.some(e => e.alive)) return 'You have the sigil. Now earn the exit by clearing the room.';
+      if (state.enemies.some(e => e.alive)) {
+        if (state.threatTiles.has(`${state.hero.x},${state.hero.y}`)) return 'Danger tile: move or eat a punish turn.';
+        return 'You have Volt Fang and the sigil. Now earn the exit by clearing the room.';
+      }
       return 'Exit unlocked. Step onto the blue stairs.';
     }
 
@@ -678,8 +737,21 @@
         }
       }
 
+      if (enemy.kind === 'guard' && seesHero && dist === enemy.lungeRange && clearStraightLine(enemy.x, enemy.y, hero.x, hero.y)) {
+        const step = nextStepTowards(enemy.x, enemy.y, hero.x, hero.y, enemy);
+        if (step && isPassable(step.x, step.y, enemy)) {
+          enemy.x = step.x;
+          enemy.y = step.y;
+        }
+        if (distance(enemy, hero) === 1) {
+          attack(enemy, hero, enemy.name, 'lunges into', 1);
+        }
+        return;
+      }
+
       if (dist === 1) {
-        attack(enemy, hero, enemy.name);
+        const packBonus = enemy.kind === 'rat' && state.enemies.some(other => other !== enemy && other.alive && distance(other, hero) === 1) ? 1 : 0;
+        attack(enemy, hero, enemy.name, packBonus ? 'mauls' : 'hits', packBonus);
         return;
       }
 
@@ -694,6 +766,7 @@
       updateExitState();
       for (const enemy of state.enemies) enemyTurn(enemy);
       computeVisibility();
+      markThreatTiles();
       updateExitState();
       state.turn += 1;
       render();
@@ -717,6 +790,7 @@
     function render() {
       computeVisibility();
       updateExitState();
+      markThreatTiles();
       board.innerHTML = '';
 
       for (const tile of state.tiles) {
@@ -735,6 +809,7 @@
           if (foe) classes.push('actor', foe.kind);
           if (state.hero.x === tile.x && state.hero.y === tile.y) classes.push('actor', 'hero');
           if (state.flash === `${tile.x},${tile.y}`) classes.push('flash');
+          if (state.threatTiles.has(`${tile.x},${tile.y}`)) classes.push('threat');
         }
 
         el.className = classes.join(' ');
@@ -743,6 +818,17 @@
           el.style.color = 'rgba(145,170,190,0.16)';
         }
         board.appendChild(el);
+
+        if (visibleNow && (foe || (state.hero.x === tile.x && state.hero.y === tile.y))) {
+          const target = foe || state.hero;
+          const hpBar = document.createElement('div');
+          hpBar.className = 'hpbar';
+          const hpFill = document.createElement('div');
+          hpFill.className = 'hpfill';
+          hpFill.style.width = `${Math.max(0, Math.min(100, (target.hp / target.maxHp) * 100))}%`;
+          hpBar.appendChild(hpFill);
+          el.appendChild(hpBar);
+        }
       }
 
       logEl.innerHTML = state.logs.map(msg => `<div class="log-entry">${msg}</div>`).join('');
@@ -752,6 +838,8 @@
       objectiveEl.textContent = objectiveText();
       keyStatusEl.textContent = state.hero.hasKey ? 'Taken' : 'Missing';
       chestStatusEl.textContent = state.hero.hasSigil ? 'Opened' : state.hero.hasKey ? 'Ready' : 'Sealed';
+      relicStatusEl.textContent = state.hero.relic;
+      turnStatusEl.textContent = String(state.turn);
       statusLineEl.textContent = statusText();
     }
 
