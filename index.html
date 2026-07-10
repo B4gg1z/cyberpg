@@ -624,7 +624,7 @@
 <body>
   <div class="app">
     <aside class="sidebar panel">
-      <div class="eyebrow">CyberPG v0.1.7</div>
+      <div class="eyebrow">CyberPG v0.1.8</div>
       <h1>One Room.<br/>Sharper Teeth.</h1>
       <p class="sub">A tougher Shattered Pixel Dungeon-inspired room: scout in the dark, snag the keycard, crack the cache chest, claim Volt Fang, survive the pressure, then escape.</p>
 
@@ -692,7 +692,7 @@
 
   <div id="overlay" class="overlay">
     <div class="overlay-card">
-      <div class="overlay-kicker">CyberPG v0.1.7</div>
+      <div class="overlay-kicker">CyberPG v0.1.8</div>
       <div id="overlayTitle" class="overlay-title">Room complete</div>
       <div id="overlayBody" class="overlay-body"></div>
       <div id="rewardGrid" class="reward-grid"></div>
@@ -979,12 +979,15 @@
         state.hero.minAtk = 4;
         state.hero.maxAtk = 7;
         state.alarmRaised = true;
+        pushFloater(state.hero.x, state.hero.y, 'VOLT FANG', 'heal');
+        pushFloater(state.hero.x, state.hero.y, 'SIGIL', 'kill');
         if (!state.enemies.some(enemy => enemy.kind === 'hunter' && enemy.alive)) {
           state.enemies.push({ id: crypto.randomUUID(), kind: 'hunter', name: 'Vault Hunter', x: 13, y: 1, hp: 7, maxHp: 7, minAtk: 2, maxAtk: 4, alive: true, alert: true, corpseTurn: null });
+          log('A Vault Hunter tears into the room from the north hall.');
         }
         for (const enemy of state.enemies) enemy.alert = true;
         shakeBoard();
-        log('The chest cracks open. Inside: Volt Fang and the exit sigil. An alarm bites back through the chamber.');
+        log('The cache chest splits wide. Volt Fang bites into your grip and the sigil core lights cold blue. The alarm answers instantly.');
       }
     }
 
@@ -1093,7 +1096,7 @@
       if (state.victory) {
         overlayEl.classList.add('show');
         overlayTitleEl.textContent = 'Room Cleared';
-        overlayBodyEl.textContent = `You escaped in ${state.turn} turns with ${state.hero.hp}/${state.hero.maxHp} HP and ${state.hero.relic}. Lock one legacy in for the next run.`;
+        overlayBodyEl.textContent = `You escaped in ${state.turn} turns with ${state.hero.hp}/${state.hero.maxHp} HP and ${state.hero.relic}. The room finally blinked first. Lock one legacy in for the next run.`;
         overlayRestartBtn.textContent = 'Run it back';
         rewardGridEl.innerHTML = rewardChoices.map(choice => `
           <button class="reward-btn" type="button" data-reward="${choice.id}">
@@ -1109,7 +1112,7 @@
       if (state.gameOver) {
         overlayEl.classList.add('show');
         overlayTitleEl.textContent = 'Run Broken';
-        overlayBodyEl.textContent = `You made it ${state.turn} turns. Try a cleaner route, safer corners, and better timing before opening the chest.`;
+        overlayBodyEl.textContent = `You made it ${state.turn} turns. Next run: cleaner route, safer corners, and wait one beat longer before waking the cache chest.`;
         overlayRestartBtn.textContent = 'Run it back';
         rewardGridEl.innerHTML = '';
         return;
@@ -1121,7 +1124,7 @@
     function beginRun() {
       state.introOpen = false;
       state.started = true;
-      log('Night run starts. First route decides how ugly this gets.');
+      log('Night run starts. First route decides how ugly this gets. Keep the chest quiet until you are ready for company.');
       render();
     }
 
