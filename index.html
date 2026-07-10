@@ -176,6 +176,9 @@
       justify-content: space-between;
       gap: 12px;
       padding: 14px 18px;
+      background: linear-gradient(180deg, rgba(20,33,48,0.82), rgba(11,18,28,0.74));
+      border: 1px solid rgba(122,203,255,0.12);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
     }
 
     .status-line {
@@ -271,7 +274,10 @@
       inset: 10% 12%;
       pointer-events: none;
       filter: drop-shadow(0 5px 7px rgba(0,0,0,0.34));
+      animation: itembob 2.2s ease-in-out infinite;
     }
+    .item-key .item-art { animation-duration: 1.9s; }
+    .item-sigil .item-art { animation-duration: 1.5s; }
     .item-core,
     .item-top,
     .item-detail,
@@ -340,7 +346,29 @@
       inset: 6% 8% 12%;
       pointer-events: none;
       filter: drop-shadow(0 6px 8px rgba(0,0,0,0.38));
+      z-index: 2;
     }
+    .actor::before {
+      content: attr(data-badge);
+      position: absolute;
+      top: 2px;
+      left: 3px;
+      padding: 1px 5px;
+      border-radius: 999px;
+      font-size: 0.48rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(5, 10, 18, 0.86);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #dcefff;
+      z-index: 3;
+    }
+    .hero::before { content: 'KC'; color: #8ae8ff; }
+    .rat::before { content: 'RAT'; color: #e8be9a; }
+    .guard::before { content: 'GRD'; color: #ffb48b; }
+    .seer::before { content: 'SEER'; color: #dcc8ff; }
+    .hunter::before { content: 'HUNT'; color: #ffd489; }
     .sprite-base,
     .sprite-head,
     .sprite-accent,
@@ -447,6 +475,18 @@
     }
     .impact.enemy { color: #ff8f8f; }
     .impact.heal { color: #8dffb2; }
+    .impact.kill { color: #ffe596; font-size: 0.72rem; text-shadow: 0 0 12px rgba(255,214,114,0.62); }
+    .corpse::after {
+      content: '✕';
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: rgba(255,155,120,0.85);
+      font-size: calc(var(--tile-size) * 0.34);
+      text-shadow: 0 0 10px rgba(255,120,80,0.35);
+      z-index: 1;
+    }
     .threat { box-shadow: inset 0 0 0 2px rgba(255, 122, 122, 0.28), 0 0 12px rgba(255, 90, 90, 0.18); }
     .hpbar {
       position: absolute;
@@ -473,10 +513,11 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(122,203,255,0.12), rgba(255,225,143,0.06));
-      border: 1px solid rgba(122,203,255,0.14);
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(122,203,255,0.14), rgba(255,225,143,0.08));
+      border: 1px solid rgba(122,203,255,0.18);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 10px 24px rgba(0,0,0,0.18);
     }
     .run-banner-copy strong {
       display: block;
@@ -560,6 +601,10 @@
       50% { transform: translateX(3px); }
       75% { transform: translateX(-2px); }
     }
+    @keyframes itembob {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-2px) scale(1.03); }
+    }
 
     @media (max-width: 980px) {
       :root { --tile-size: min(calc((100vw - 40px) / 16), calc((58vh - 22px) / 12), 38px); }
@@ -579,9 +624,9 @@
 <body>
   <div class="app">
     <aside class="sidebar panel">
-      <div class="eyebrow">CyberPG v0.1.6</div>
+      <div class="eyebrow">CyberPG v0.1.7</div>
       <h1>One Room.<br/>Sharper Teeth.</h1>
-      <p class="sub">A tougher Shattered Pixel Dungeon-inspired room: scout in the dark, grab the key, crack the chest, claim Volt Fang, survive the pressure, then escape.</p>
+      <p class="sub">A tougher Shattered Pixel Dungeon-inspired room: scout in the dark, snag the keycard, crack the cache chest, claim Volt Fang, survive the pressure, then escape.</p>
 
       <div class="chips">
         <div class="chip">Turn-based</div>
@@ -591,8 +636,8 @@
 
       <div class="run-banner">
         <div class="run-banner-copy">
-          <strong>Original character pass</strong>
-          <span>Cyborg kittygirl hero, readable monster silhouettes, and sensible loot shapes — all custom HTML/CSS with no asset-license baggage.</span>
+          <strong>Public demo slice</strong>
+          <span>Cyborg kittygirl hero, readable monster silhouettes, objective drama, and sensible loot shapes — all custom HTML/CSS with no asset-license baggage.</span>
         </div>
       </div>
 
@@ -647,7 +692,7 @@
 
   <div id="overlay" class="overlay">
     <div class="overlay-card">
-      <div class="overlay-kicker">CyberPG v0.1.6</div>
+      <div class="overlay-kicker">CyberPG v0.1.7</div>
       <div id="overlayTitle" class="overlay-title">Room complete</div>
       <div id="overlayBody" class="overlay-body"></div>
       <div id="rewardGrid" class="reward-grid"></div>
@@ -748,16 +793,16 @@
           if (ch === 'C') { type = 'floor'; chest = { x, y, opened: false, hasSigil: true }; }
           if (ch === '@') { type = 'floor'; hero = { x, y, hp: 14, maxHp: 14, minAtk: 3, maxAtk: 5, hasKey: false, hasSigil: false, relic: 'Mono-Claw', title: 'Cyborg Kittygirl' }; }
           if (ch === 'r') {
-            enemies.push({ id: crypto.randomUUID(), kind: 'rat', name: 'Sewer Rat', x, y, hp: 5, maxHp: 5, minAtk: 1, maxAtk: 2, alive: true, alert: false });
+            enemies.push({ id: crypto.randomUUID(), kind: 'rat', name: 'Sewer Rat', x, y, hp: 5, maxHp: 5, minAtk: 1, maxAtk: 2, alive: true, alert: false, corpseTurn: null });
           }
           if (ch === 'g') {
-            enemies.push({ id: crypto.randomUUID(), kind: 'guard', name: 'Fallen Guard', x, y, hp: 9, maxHp: 9, minAtk: 2, maxAtk: 3, alive: true, alert: false, lungeRange: 2 });
+            enemies.push({ id: crypto.randomUUID(), kind: 'guard', name: 'Fallen Guard', x, y, hp: 9, maxHp: 9, minAtk: 2, maxAtk: 3, alive: true, alert: false, lungeRange: 2, corpseTurn: null });
           }
           if (ch === 's') {
-            enemies.push({ id: crypto.randomUUID(), kind: 'seer', name: 'Wire Seer', x, y, hp: 6, maxHp: 6, minAtk: 2, maxAtk: 4, alive: true, alert: false, range: 5 });
+            enemies.push({ id: crypto.randomUUID(), kind: 'seer', name: 'Wire Seer', x, y, hp: 6, maxHp: 6, minAtk: 2, maxAtk: 4, alive: true, alert: false, range: 5, corpseTurn: null });
           }
           if (ch === 'h') {
-            enemies.push({ id: crypto.randomUUID(), kind: 'hunter', name: 'Vault Hunter', x, y, hp: 7, maxHp: 7, minAtk: 2, maxAtk: 4, alive: true, alert: false });
+            enemies.push({ id: crypto.randomUUID(), kind: 'hunter', name: 'Vault Hunter', x, y, hp: 7, maxHp: 7, minAtk: 2, maxAtk: 4, alive: true, alert: false, corpseTurn: null });
           }
           tiles.push({ x, y, type, glyph: floorGlyphs[(x * 7 + y * 3) % floorGlyphs.length] });
         }
@@ -831,7 +876,7 @@
       window.setTimeout(() => {
         state.floaters = state.floaters.filter(f => f.id !== id);
         render();
-      }, 420);
+      }, kind === 'kill' ? 620 : 420);
     }
 
     function shakeBoard() {
@@ -903,6 +948,8 @@
           log('You drop in the chamber. R to reset.');
         } else {
           defender.alive = false;
+          defender.corpseTurn = state.turn;
+          pushFloater(defender.x, defender.y, 'DOWN', 'kill');
           log(`${defender.name} falls.`);
         }
       }
@@ -912,6 +959,7 @@
       if (state.key && !state.key.taken && state.hero.x === state.key.x && state.hero.y === state.key.y) {
         state.key.taken = true;
         state.hero.hasKey = true;
+        pushFloater(state.hero.x, state.hero.y, 'KEYCARD', 'heal');
         log('You palm the access keycard. The cache chest is live now.');
       }
 
@@ -932,7 +980,7 @@
         state.hero.maxAtk = 7;
         state.alarmRaised = true;
         if (!state.enemies.some(enemy => enemy.kind === 'hunter' && enemy.alive)) {
-          state.enemies.push({ id: crypto.randomUUID(), kind: 'hunter', name: 'Vault Hunter', x: 13, y: 1, hp: 7, maxHp: 7, minAtk: 2, maxAtk: 4, alive: true, alert: true });
+          state.enemies.push({ id: crypto.randomUUID(), kind: 'hunter', name: 'Vault Hunter', x: 13, y: 1, hp: 7, maxHp: 7, minAtk: 2, maxAtk: 4, alive: true, alert: true, corpseTurn: null });
         }
         for (const enemy of state.enemies) enemy.alert = true;
         shakeBoard();
@@ -981,7 +1029,7 @@
     function objectiveText() {
       if (state.victory) return 'Complete';
       if (!state.hero.hasKey) return 'Find keycard';
-      if (!state.hero.hasSigil) return 'Open chest';
+      if (!state.hero.hasSigil) return state.chest.opened ? 'Claim sigil' : 'Open cache chest';
       if (state.enemies.some(e => e.alive)) return 'Clear enemies';
       return 'Reach exit';
     }
@@ -991,7 +1039,9 @@
       if (state.victory) return 'Victory. Kittygirl out, sigil secured.';
       if (state.gameOver) return 'Defeat. Reset and route the room better.';
       if (!state.hero.hasKey) return 'Scout the dark and secure the keycard first.';
-      if (!state.hero.hasSigil) return 'Use the keycard on the cache chest. The exit still means nothing without the sigil chip.';
+      if (!state.hero.hasSigil) return state.chest.opened
+        ? 'Sigil loaded and alarm screaming. Finish the room and earn the stairs.'
+        : 'Use the keycard on the cache chest. The exit still means nothing without the sigil chip.';
       if (state.enemies.some(e => e.alive)) {
         if (state.threatTiles.has(`${state.hero.x},${state.hero.y}`)) return 'Danger tile: move or eat a punish turn.';
         if (state.alarmRaised) return 'Alarm raised. The room is awake now — finish the fight and leave.';
@@ -1035,15 +1085,15 @@
       if (state.introOpen && !state.started) {
         overlayEl.classList.add('show');
         overlayTitleEl.textContent = 'Night Run';
-        overlayBodyEl.textContent = `Route the key, crack the chest, claim Volt Fang, then leave alive. ${state.storedBoon !== 'none' ? `Stored legacy: ${boonLabel(state.storedBoon)}.` : 'No stored legacy yet.'}`;
-        rewardGridEl.innerHTML = '<div class="intent-entry">All visuals in this slice are original HTML/CSS shapes authored in-project for a future-safe publishing path.</div>';
+        overlayBodyEl.textContent = `Route the keycard, crack the cache chest, claim Volt Fang, then leave alive. ${state.storedBoon !== 'none' ? `Stored legacy: ${boonLabel(state.storedBoon)}.` : 'No stored legacy yet.'}`;
+        rewardGridEl.innerHTML = '<div class="intent-entry">All visuals in this slice are original HTML/CSS shapes authored in-project for a future-safe publishing path.</div><div class="intent-entry">Enemy badges, loot silhouettes, and combat readouts are tuned for a cleaner public demo pass.</div>';
         overlayRestartBtn.textContent = 'Enter room';
         return;
       }
       if (state.victory) {
         overlayEl.classList.add('show');
         overlayTitleEl.textContent = 'Room Cleared';
-        overlayBodyEl.textContent = `You escaped in ${state.turn} turns with ${state.hero.hp}/${state.hero.maxHp} HP and ${state.hero.relic}. Choose one legacy for the next run.`;
+        overlayBodyEl.textContent = `You escaped in ${state.turn} turns with ${state.hero.hp}/${state.hero.maxHp} HP and ${state.hero.relic}. Lock one legacy in for the next run.`;
         overlayRestartBtn.textContent = 'Run it back';
         rewardGridEl.innerHTML = rewardChoices.map(choice => `
           <button class="reward-btn" type="button" data-reward="${choice.id}">
@@ -1284,6 +1334,9 @@
           if (state.flash === `${tile.x},${tile.y}`) classes.push('flash');
           if (state.threatTiles.has(`${tile.x},${tile.y}`)) classes.push('threat');
         }
+
+        const corpseHere = state.enemies.some(enemy => !enemy.alive && enemy.corpseTurn !== null && enemy.x === tile.x && enemy.y === tile.y && state.turn - enemy.corpseTurn <= 2);
+        if (visibleNow && corpseHere) classes.push('corpse');
 
         el.className = classes.join(' ');
         if (visibleNow) {

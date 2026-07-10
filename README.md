@@ -40,7 +40,7 @@ Shattered Pixel Dungeon feel to chase in the reboot:
 - strong tile readability over flashy effects
 
 ## Current status
-- current project: CyberPG v0.1.6 one-room prototype with a cyborg kittygirl hero, original enemy silhouettes, sensible item shapes, stronger room materials, threat telegraphs, combat popoffs, reinforcements, and a post-room legacy reward loop.
+- current project: CyberPG v0.1.7 one-room prototype with a cyborg kittygirl hero, readable enemy badges/silhouettes, stronger keycard/chest drama, better hit/death readability, and a cleaner public-demo shell.
 
 ## Asset / licensing posture
 - current visuals are authored directly in `index.html` as HTML/CSS shapes and gradients
