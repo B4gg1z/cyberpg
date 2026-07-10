@@ -216,7 +216,7 @@
         linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
       border: 1px solid rgba(255,255,255,0.06);
       border-radius: 18px;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 18px 34px rgba(0,0,0,0.26);
       position: relative;
       overflow: hidden;
     }
@@ -254,8 +254,8 @@
       transition: filter 0.1s ease, opacity 0.1s ease, box-shadow 0.1s ease;
     }
 
-    .wall { background: linear-gradient(180deg, #2a4158 0%, #182633 100%); }
-    .floor { background: linear-gradient(180deg, var(--floor) 0%, var(--floor-2) 100%); }
+    .wall { background: linear-gradient(180deg, #37516c 0%, #182633 100%); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04); }
+    .floor { background: linear-gradient(180deg, #182632 0%, #0d151d 100%); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.015); }
     .exit { background: linear-gradient(180deg, #18395b 0%, #0f2235 100%); }
     .exit::after {
       content: "⇣";
@@ -266,31 +266,89 @@
     }
     .exit.locked::after { color: rgba(99,184,255,0.35); text-shadow: none; }
 
-    .item-key::after,
-    .item-potion::after,
-    .item-chest::after,
-    .item-sigil::after {
+    .item-art {
       position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      font-weight: 900;
+      inset: 10% 12%;
+      pointer-events: none;
+      filter: drop-shadow(0 5px 7px rgba(0,0,0,0.34));
     }
-    .item-key::after { content: "k"; color: var(--key); }
-    .item-potion::after { content: "!"; color: #ffd7e2; text-shadow: 0 0 10px rgba(226,79,124,0.8); }
-    .item-chest::after { content: "▣"; color: var(--chest); font-size: calc(var(--tile-size) * 0.42); }
-    .item-sigil::after { content: "✦"; color: #ffe8a3; text-shadow: 0 0 10px rgba(255,225,143,0.85); }
+    .item-core,
+    .item-top,
+    .item-detail,
+    .item-glow {
+      position: absolute;
+      display: block;
+    }
+    .item-key .item-core {
+      left: 22%; right: 30%; top: 42%; height: 16%;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #ffe79c 0%, #c9972e 100%);
+    }
+    .item-key .item-top {
+      left: 52%; top: 28%; width: 26%; height: 26%;
+      border: 4px solid #ffd76a; border-radius: 999px;
+      box-shadow: 0 0 10px rgba(255,215,106,0.35);
+    }
+    .item-key .item-detail {
+      left: 18%; top: 44%; width: 14%; height: 10%;
+      background: #ffe8a3; box-shadow: 0 10px 0 #ffe8a3;
+    }
+    .item-potion .item-core {
+      left: 32%; right: 32%; top: 28%; bottom: 16%;
+      border-radius: 10px 10px 14px 14px;
+      background: linear-gradient(180deg, #ffb5ca 0%, #d33d72 100%);
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.14);
+    }
+    .item-potion .item-top {
+      left: 40%; right: 40%; top: 18%; height: 12%;
+      border-radius: 4px 4px 0 0;
+      background: #f5d8df;
+    }
+    .item-potion .item-glow {
+      inset: 34% 30% 22%;
+      border-radius: 999px;
+      background: rgba(255,220,232,0.24);
+    }
+    .item-chest .item-core {
+      inset: 30% 18% 18%;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #cb925a 0%, #74492b 100%);
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.16);
+    }
+    .item-chest .item-top {
+      left: 18%; right: 18%; top: 20%; height: 20%;
+      border-radius: 12px 12px 6px 6px;
+      background: linear-gradient(180deg, #e0ad72 0%, #99623b 100%);
+    }
+    .item-chest .item-detail {
+      left: 45%; width: 10%; top: 34%; bottom: 24%;
+      background: #f4d08a; border-radius: 4px;
+    }
+    .item-sigil .item-core {
+      inset: 24%;
+      background: linear-gradient(180deg, #fff0b8 0%, #a2dcff 100%);
+      clip-path: polygon(50% 0%, 82% 18%, 100% 50%, 82% 82%, 50% 100%, 18% 82%, 0% 50%, 18% 18%);
+      box-shadow: 0 0 14px rgba(180,232,255,0.28);
+    }
+    .item-sigil .item-glow {
+      inset: 12%; border-radius: 999px;
+      background: radial-gradient(circle, rgba(255,225,143,0.35), rgba(99,184,255,0.04) 70%);
+    }
 
     .sprite {
       position: absolute;
-      inset: 8% 10% 16%;
+      inset: 6% 8% 12%;
       pointer-events: none;
       filter: drop-shadow(0 6px 8px rgba(0,0,0,0.38));
     }
     .sprite-base,
     .sprite-head,
     .sprite-accent,
-    .sprite-weapon {
+    .sprite-weapon,
+    .sprite-ear-left,
+    .sprite-ear-right,
+    .sprite-tail,
+    .sprite-eye {
       position: absolute;
       display: block;
     }
@@ -332,22 +390,48 @@
       transform-origin: bottom center;
       opacity: 0.95;
     }
-    .hero { --sprite-main: linear-gradient(180deg, #f3f0d1 0%, #d0c07f 100%); --sprite-head: #f7dfca; --sprite-accent: #8ae8ff; --sprite-weapon: linear-gradient(180deg, #dffbff 0%, #7acbff 100%); }
-    .rat { --sprite-main: linear-gradient(180deg, #b77859 0%, #7a4a36 100%); --sprite-head: #cb8d6f; --sprite-accent: #f7c49a; --sprite-weapon: rgba(255,255,255,0); }
-    .guard { --sprite-main: linear-gradient(180deg, #c57b61 0%, #7f3d31 100%); --sprite-head: #dfb093; --sprite-accent: #ffb48b; --sprite-weapon: linear-gradient(180deg, #ffe0b0 0%, #ff9f7a 100%); }
-    .seer { --sprite-main: linear-gradient(180deg, #b58dff 0%, #5d3da0 100%); --sprite-head: #dfcaff; --sprite-accent: #e8c6ff; --sprite-weapon: linear-gradient(180deg, #f5e6ff 0%, #b487ff 100%); }
-    .hunter { --sprite-main: linear-gradient(180deg, #ffbf7f 0%, #995527 100%); --sprite-head: #ffd6b6; --sprite-accent: #ffe48f; --sprite-weapon: linear-gradient(180deg, #fff0b5 0%, #ff9c5f 100%); }
-    .hero .sprite-base { border-radius: 30% 30% 24% 24%; }
-    .hero .sprite-accent { left: 28%; right: 28%; bottom: 36%; height: 10%; box-shadow: 0 0 10px rgba(122,203,255,0.55); }
-    .hero .sprite-weapon { width: 12%; height: 56%; right: 14%; top: 16%; }
-    .rat .sprite-base { left: 22%; right: 18%; height: 34%; border-radius: 48% 52% 36% 38%; }
-    .rat .sprite-head { left: 40%; right: 24%; top: 26%; height: 18%; }
-    .rat .sprite-accent { left: 16%; right: 46%; bottom: 16%; height: 10%; }
-    .rat .sprite-weapon { display: none; }
-    .guard .sprite-weapon,
-    .hunter .sprite-weapon { width: 14%; }
-    .seer .sprite-weapon { width: 10%; right: 18%; top: 14%; height: 62%; }
-    .seer .sprite-accent { bottom: 34%; height: 8%; box-shadow: 0 0 12px rgba(180,135,255,0.58); }
+    .hero { --sprite-main: linear-gradient(180deg, #151f2d 0%, #4f5f78 100%); --sprite-head: #f6d8c5; --sprite-accent: linear-gradient(90deg, #ff7ab8 0%, #8ae8ff 100%); --sprite-weapon: linear-gradient(180deg, #dffbff 0%, #7acbff 100%); }
+    .rat { --sprite-main: linear-gradient(180deg, #8f684f 0%, #4d3328 100%); --sprite-head: #a8795f; --sprite-accent: #e3b38e; --sprite-weapon: rgba(255,255,255,0); }
+    .guard { --sprite-main: linear-gradient(180deg, #7e2e28 0%, #34151a 100%); --sprite-head: #e1b499; --sprite-accent: #ffb48b; --sprite-weapon: linear-gradient(180deg, #ffe0b0 0%, #ff9f7a 100%); }
+    .seer { --sprite-main: linear-gradient(180deg, #7a58d8 0%, #241844 100%); --sprite-head: #dacbff; --sprite-accent: #f0deff; --sprite-weapon: linear-gradient(180deg, #f5e6ff 0%, #b487ff 100%); }
+    .hunter { --sprite-main: linear-gradient(180deg, #a35a1d 0%, #3f2412 100%); --sprite-head: #ffd6b6; --sprite-accent: #ffe48f; --sprite-weapon: linear-gradient(180deg, #fff0b5 0%, #ff9c5f 100%); }
+    .hero .sprite-head { left: 36%; right: 36%; top: 14%; height: 24%; }
+    .hero .sprite-base { left: 28%; right: 28%; bottom: 12%; height: 48%; border-radius: 28% 28% 18% 18%; }
+    .hero .sprite-accent { left: 28%; right: 28%; top: 28%; height: 8%; box-shadow: 0 0 10px rgba(122,203,255,0.65); }
+    .hero .sprite-weapon { width: 10%; height: 58%; right: 10%; top: 12%; }
+    .hero .sprite-ear-left, .hero .sprite-ear-right {
+      top: 6%; width: 16%; height: 16%; background: #131924; clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+    }
+    .hero .sprite-ear-left { left: 30%; transform: rotate(-14deg); }
+    .hero .sprite-ear-right { right: 30%; transform: rotate(14deg); }
+    .hero .sprite-tail {
+      left: 12%; bottom: 18%; width: 34%; height: 12%; border-radius: 999px; background: linear-gradient(90deg, #101822 0%, #ff7ab8 100%); transform: rotate(28deg);
+    }
+    .hero .sprite-eye { left: 40%; right: 40%; top: 29%; height: 5%; border-radius: 999px; background: #8ae8ff; box-shadow: 0 0 8px rgba(138,232,255,0.9); }
+    .rat .sprite-base { left: 18%; right: 20%; bottom: 20%; height: 26%; border-radius: 46% 54% 42% 40%; }
+    .rat .sprite-head { left: 56%; right: 10%; top: 34%; height: 14%; }
+    .rat .sprite-ear-left, .rat .sprite-ear-right { top: 28%; width: 8%; height: 8%; background: #d2a27d; clip-path: polygon(50% 0%, 100% 100%, 0% 100%); }
+    .rat .sprite-ear-left { left: 56%; }
+    .rat .sprite-ear-right { left: 64%; }
+    .rat .sprite-tail { left: 8%; top: 44%; width: 24%; height: 8%; border-radius: 999px; background: #d6a989; transform: rotate(18deg); }
+    .rat .sprite-accent { left: 46%; right: 18%; bottom: 18%; height: 6%; }
+    .rat .sprite-weapon, .rat .sprite-eye { display: none; }
+    .guard .sprite-head { top: 16%; }
+    .guard .sprite-base { left: 24%; right: 24%; height: 50%; border-radius: 24% 24% 16% 16%; }
+    .guard .sprite-accent { left: 30%; right: 30%; top: 34%; height: 9%; background: linear-gradient(90deg, #ffb48b, #ffd6aa); }
+    .guard .sprite-weapon { width: 13%; height: 58%; right: 10%; top: 12%; }
+    .guard .sprite-ear-left, .guard .sprite-ear-right, .guard .sprite-tail, .guard .sprite-eye { display: none; }
+    .seer .sprite-head { left: 38%; right: 38%; top: 16%; height: 18%; }
+    .seer .sprite-base { left: 22%; right: 22%; bottom: 10%; height: 50%; border-radius: 42% 42% 24% 24%; }
+    .seer .sprite-accent { left: 28%; right: 28%; top: 24%; height: 10%; box-shadow: 0 0 12px rgba(180,135,255,0.58); }
+    .seer .sprite-weapon { width: 9%; right: 16%; top: 12%; height: 62%; }
+    .seer .sprite-tail, .seer .sprite-ear-left, .seer .sprite-ear-right { display: none; }
+    .seer .sprite-eye { left: 43%; right: 43%; top: 23%; height: 5%; background: #fff; box-shadow: 0 0 8px rgba(255,255,255,0.85); }
+    .hunter .sprite-head { top: 14%; }
+    .hunter .sprite-base { left: 22%; right: 22%; bottom: 10%; height: 52%; border-radius: 24% 24% 16% 16%; }
+    .hunter .sprite-accent { left: 26%; right: 26%; top: 35%; height: 8%; background: linear-gradient(90deg, #ffe48f, #ff9c5f); }
+    .hunter .sprite-weapon { width: 18%; height: 64%; right: 8%; top: 10%; }
+    .hunter .sprite-tail, .hunter .sprite-ear-left, .hunter .sprite-ear-right, .hunter .sprite-eye { display: none; }
 
     .flash { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.16), 0 0 18px rgba(255, 225, 143, 0.35); transform: scale(1.05); }
     .impact {
@@ -495,7 +579,7 @@
 <body>
   <div class="app">
     <aside class="sidebar panel">
-      <div class="eyebrow">CyberPG v0.1.5</div>
+      <div class="eyebrow">CyberPG v0.1.6</div>
       <h1>One Room.<br/>Sharper Teeth.</h1>
       <p class="sub">A tougher Shattered Pixel Dungeon-inspired room: scout in the dark, grab the key, crack the chest, claim Volt Fang, survive the pressure, then escape.</p>
 
@@ -507,8 +591,8 @@
 
       <div class="run-banner">
         <div class="run-banner-copy">
-          <strong>Original in-browser art pass</strong>
-          <span>Hero and enemy silhouettes are custom CSS/vector-style shapes made inside this file — no external sprite pack baggage.</span>
+          <strong>Original character pass</strong>
+          <span>Cyborg kittygirl hero, readable monster silhouettes, and sensible loot shapes — all custom HTML/CSS with no asset-license baggage.</span>
         </div>
       </div>
 
@@ -516,7 +600,7 @@
         <div class="stat-card"><div class="stat-label">Hero HP</div><div id="heroHp" class="stat-value">14 / 14</div></div>
         <div class="stat-card"><div class="stat-label">Attack</div><div id="heroAtk" class="stat-value">3-5</div></div>
         <div class="stat-card"><div class="stat-label">Enemies</div><div id="enemyCount" class="stat-value">3</div></div>
-        <div class="stat-card"><div class="stat-label">Objective</div><div id="objective" class="stat-value">Find key</div></div>
+        <div class="stat-card"><div class="stat-label">Objective</div><div id="objective" class="stat-value">Find keycard</div></div>
         <div class="stat-card"><div class="stat-label">Key</div><div id="keyStatus" class="stat-value">Missing</div></div>
         <div class="stat-card"><div class="stat-label">Chest</div><div id="chestStatus" class="stat-value">Sealed</div></div>
         <div class="stat-card"><div class="stat-label">Relic</div><div id="relicStatus" class="stat-value">None</div></div>
@@ -557,13 +641,13 @@
         </div>
       </div>
 
-      <div class="footer-note">Prototype target: tactical dungeon feel before any larger scope.</div>
+      <div class="footer-note">Prototype target: readable original cyber-fantasy tactics with a clean future publishing path.</div>
     </main>
   </div>
 
   <div id="overlay" class="overlay">
     <div class="overlay-card">
-      <div class="overlay-kicker">CyberPG v0.1.5</div>
+      <div class="overlay-kicker">CyberPG v0.1.6</div>
       <div id="overlayTitle" class="overlay-title">Room complete</div>
       <div id="overlayBody" class="overlay-body"></div>
       <div id="rewardGrid" class="reward-grid"></div>
@@ -662,7 +746,7 @@
           if (ch === '!') { type = 'floor'; potion = { x, y, used: false }; }
           if (ch === 'K') { type = 'floor'; key = { x, y, taken: false }; }
           if (ch === 'C') { type = 'floor'; chest = { x, y, opened: false, hasSigil: true }; }
-          if (ch === '@') { type = 'floor'; hero = { x, y, hp: 14, maxHp: 14, minAtk: 3, maxAtk: 5, hasKey: false, hasSigil: false, relic: 'None' }; }
+          if (ch === '@') { type = 'floor'; hero = { x, y, hp: 14, maxHp: 14, minAtk: 3, maxAtk: 5, hasKey: false, hasSigil: false, relic: 'Mono-Claw', title: 'Cyborg Kittygirl' }; }
           if (ch === 'r') {
             enemies.push({ id: crypto.randomUUID(), kind: 'rat', name: 'Sewer Rat', x, y, hp: 5, maxHp: 5, minAtk: 1, maxAtk: 2, alive: true, alert: false });
           }
@@ -697,8 +781,8 @@
         visible: new Set(),
         threatTiles: new Set(),
         logs: [
-          'This room has a little spine now. Don’t drift. Read it.',
-          'Find the key, open the chest, take the sigil, then earn the exit.'
+          'Cyborg kittygirl on point. Read the room before you feed it free hits.',
+          'Find the access keycard, crack the cache chest, lift the sigil chip, then earn the exit.'
         ],
         alarmRaised: false,
         floaters: [],
@@ -828,8 +912,9 @@
       if (state.key && !state.key.taken && state.hero.x === state.key.x && state.hero.y === state.key.y) {
         state.key.taken = true;
         state.hero.hasKey = true;
-        log('You take the brass key. The chest can be opened now.');
+        log('You palm the access keycard. The cache chest is live now.');
       }
+
       if (state.potion && !state.potion.used && state.hero.x === state.potion.x && state.hero.y === state.potion.y) {
         state.potion.used = true;
         const heal = Math.min(state.hero.maxHp - state.hero.hp, 5);
@@ -895,22 +980,22 @@
 
     function objectiveText() {
       if (state.victory) return 'Complete';
-      if (!state.hero.hasKey) return 'Find key';
+      if (!state.hero.hasKey) return 'Find keycard';
       if (!state.hero.hasSigil) return 'Open chest';
       if (state.enemies.some(e => e.alive)) return 'Clear enemies';
       return 'Reach exit';
     }
 
     function statusText() {
-      if (state.introOpen && !state.started) return 'Begin the run when you’re ready. First route matters.';
-      if (state.victory) return 'Victory. The one-room slice has some teeth now.';
+      if (state.introOpen && !state.started) return 'Begin the run when you’re ready. Kitty ears up. First route matters.';
+      if (state.victory) return 'Victory. Kittygirl out, sigil secured.';
       if (state.gameOver) return 'Defeat. Reset and route the room better.';
-      if (!state.hero.hasKey) return 'Scout the dark and secure the key first.';
-      if (!state.hero.hasSigil) return 'Use the key on the chest. The exit still means nothing without the sigil.';
+      if (!state.hero.hasKey) return 'Scout the dark and secure the keycard first.';
+      if (!state.hero.hasSigil) return 'Use the keycard on the cache chest. The exit still means nothing without the sigil chip.';
       if (state.enemies.some(e => e.alive)) {
         if (state.threatTiles.has(`${state.hero.x},${state.hero.y}`)) return 'Danger tile: move or eat a punish turn.';
         if (state.alarmRaised) return 'Alarm raised. The room is awake now — finish the fight and leave.';
-        return 'You have Volt Fang and the sigil. Now earn the exit by clearing the room.';
+        return 'Mono-Claw hot and sigil loaded. Clear the room, then leave.';
       }
       return 'Exit unlocked. Step onto the blue stairs.';
     }
@@ -1167,6 +1252,14 @@
       return '';
     }
 
+    function itemMarkup() {
+      return '<span class="item-glow"></span><span class="item-top"></span><span class="item-core"></span><span class="item-detail"></span>';
+    }
+
+    function spriteMarkup() {
+      return '<span class="sprite-ear-left"></span><span class="sprite-ear-right"></span><span class="sprite-tail"></span><span class="sprite-head"></span><span class="sprite-eye"></span><span class="sprite-base"></span><span class="sprite-accent"></span><span class="sprite-weapon"></span>';
+    }
+
     function render() {
       computeVisibility();
       updateExitState();
@@ -1193,10 +1286,19 @@
         }
 
         el.className = classes.join(' ');
+        if (visibleNow) {
+          const item = itemClass(tile);
+          if (item) {
+            const itemEl = document.createElement('div');
+            itemEl.className = 'item-art';
+            itemEl.innerHTML = itemMarkup();
+            el.appendChild(itemEl);
+          }
+        }
         if (visibleNow && (foe || (state.hero.x === tile.x && state.hero.y === tile.y))) {
           const sprite = document.createElement('div');
           sprite.className = 'sprite';
-          sprite.innerHTML = '<span class="sprite-head"></span><span class="sprite-base"></span><span class="sprite-accent"></span><span class="sprite-weapon"></span>';
+          sprite.innerHTML = spriteMarkup();
           el.appendChild(sprite);
         }
         if (visibleNow && tile.type === 'floor' && !foe && !(state.hero.x === tile.x && state.hero.y === tile.y) && !itemClass(tile)) {
