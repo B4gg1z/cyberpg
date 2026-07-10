@@ -9,30 +9,32 @@
       --bg: #08111a;
       --panel: rgba(10, 20, 31, 0.92);
       --panel-2: rgba(16, 32, 48, 0.95);
-      --line: rgba(122, 203, 255, 0.25);
+      --line: rgba(122, 203, 255, 0.24);
       --accent: #7acbff;
       --accent-2: #ffe18f;
-      --danger: #ff7f7f;
+      --danger: #ff8a86;
       --good: #7fffb2;
       --muted: #8aa5bb;
-      --wall: #203244;
+      --wall: #273b4f;
       --floor: #13202c;
-      --floor-2: #101923;
-      --exit: #5fb5ff;
-      --potion: #e24f7c;
+      --floor-2: #0f1822;
       --hero: #f4f2cf;
-      --enemy: #de8d62;
-      --enemy-2: #b85f4d;
+      --rat: #d58d69;
+      --guard: #b86a52;
+      --seer: #b487ff;
+      --key: #ffd76a;
+      --chest: #cb925a;
+      --exit: #63b8ff;
+      --potion: #e24f7c;
       --shadow: rgba(0,0,0,0.56);
-      --tile-size: min(calc((100vw - 360px) / 16), calc((100vh - 180px) / 12), 48px);
+      --tile-size: min(calc((100vw - 390px) / 16), calc((100vh - 190px) / 12), 48px);
     }
 
     * { box-sizing: border-box; }
     html, body { height: 100%; margin: 0; }
     body {
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background:
-        radial-gradient(circle at top, #18314b 0%, #0a1420 38%, #05080d 100%);
+      background: radial-gradient(circle at top, #18314b 0%, #0a1420 38%, #05080d 100%);
       color: #edf7ff;
       overflow: hidden;
     }
@@ -40,7 +42,7 @@
     .app {
       min-height: 100%;
       display: grid;
-      grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+      grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
       gap: 16px;
       padding: 16px;
     }
@@ -79,7 +81,7 @@
       color: #bfd3e5;
       line-height: 1.4;
       margin: 0;
-      font-size: 0.96rem;
+      font-size: 0.95rem;
     }
 
     .chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -119,7 +121,7 @@
 
     .log {
       flex: 1;
-      min-height: 120px;
+      min-height: 136px;
       overflow: auto;
       background: rgba(0,0,0,0.14);
       border-radius: 14px;
@@ -128,7 +130,7 @@
     }
     .log-entry {
       color: #d5e8f7;
-      font-size: 0.92rem;
+      font-size: 0.91rem;
       line-height: 1.35;
       margin-bottom: 8px;
     }
@@ -158,13 +160,10 @@
     .status-line {
       color: #cfe7fb;
       font-size: 0.95rem;
+      line-height: 1.35;
     }
 
-    .button-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+    .button-row { display: flex; gap: 10px; flex-wrap: wrap; }
 
     button {
       appearance: none;
@@ -214,7 +213,7 @@
       font-size: calc(var(--tile-size) * 0.54);
       border-radius: 6px;
       position: relative;
-      transition: filter 0.1s ease, opacity 0.1s ease;
+      transition: filter 0.1s ease, opacity 0.1s ease, box-shadow 0.1s ease;
     }
 
     .wall { background: linear-gradient(180deg, #2a4158 0%, #182633 100%); }
@@ -222,17 +221,27 @@
     .exit { background: linear-gradient(180deg, #18395b 0%, #0f2235 100%); }
     .exit::after {
       content: "⇣";
-      color: #79c8ff;
+      color: var(--exit);
       font-size: calc(var(--tile-size) * 0.5);
-      opacity: 0.85;
+      opacity: 0.9;
+      text-shadow: 0 0 12px rgba(99,184,255,0.45);
     }
-    .potion::after {
-      content: "!";
-      color: #ffd7e2;
-      font-size: calc(var(--tile-size) * 0.48);
-      font-weight: 800;
-      text-shadow: 0 0 10px rgba(226,79,124,0.8);
+    .exit.locked::after { color: rgba(99,184,255,0.35); text-shadow: none; }
+
+    .item-key::after,
+    .item-potion::after,
+    .item-chest::after,
+    .item-sigil::after {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
     }
+    .item-key::after { content: "k"; color: var(--key); }
+    .item-potion::after { content: "!"; color: #ffd7e2; text-shadow: 0 0 10px rgba(226,79,124,0.8); }
+    .item-chest::after { content: "▣"; color: var(--chest); font-size: calc(var(--tile-size) * 0.42); }
+    .item-sigil::after { content: "✦"; color: #ffe8a3; text-shadow: 0 0 10px rgba(255,225,143,0.85); }
 
     .actor::after {
       position: absolute;
@@ -243,13 +252,18 @@
       text-shadow: 0 2px 8px rgba(0,0,0,0.45);
     }
     .hero::after { content: "@"; color: var(--hero); }
-    .rat::after { content: "r"; color: var(--enemy); }
-    .guard::after { content: "g"; color: var(--enemy-2); }
-    .dead { opacity: 0.35; }
+    .rat::after { content: "r"; color: var(--rat); }
+    .guard::after { content: "g"; color: var(--guard); }
+    .seer::after { content: "s"; color: var(--seer); }
 
-    .dim { filter: brightness(0.42) saturate(0.7); }
-    .dark { opacity: 0.16; filter: brightness(0.2); }
-    .flash { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.12), 0 0 18px rgba(255, 225, 143, 0.35); }
+    .flash { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.16), 0 0 18px rgba(255, 225, 143, 0.35); }
+    .visible-dim { filter: brightness(0.62) saturate(0.8); }
+    .memory { opacity: 0.34; filter: grayscale(0.18) brightness(0.48); }
+    .unseen {
+      background: rgba(2, 5, 8, 0.95) !important;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.01);
+    }
+    .unseen::after { content: none !important; }
 
     .footer-note {
       color: var(--muted);
@@ -267,7 +281,7 @@
     }
 
     @media (max-height: 760px) {
-      :root { --tile-size: min(calc((100vw - 360px) / 16), calc((100vh - 200px) / 12), 42px); }
+      :root { --tile-size: min(calc((100vw - 390px) / 16), calc((100vh - 220px) / 12), 42px); }
       .sidebar { gap: 10px; padding: 14px; }
       .topbar { padding: 12px 14px; }
     }
@@ -276,21 +290,23 @@
 <body>
   <div class="app">
     <aside class="sidebar panel">
-      <div class="eyebrow">CyberPG reboot</div>
-      <h1>One Room.<br/>Do It Right.</h1>
-      <p class="sub">A fresh Shattered Pixel Dungeon-inspired test slice: turn-based, readable, tactical, and small enough to judge honestly.</p>
+      <div class="eyebrow">CyberPG v0.1.1</div>
+      <h1>One Room.<br/>Sharper Teeth.</h1>
+      <p class="sub">A tougher Shattered Pixel Dungeon-inspired room: scout in the dark, grab the key, crack the chest, survive the pressure, then escape.</p>
 
       <div class="chips">
         <div class="chip">Turn-based</div>
-        <div class="chip">One room</div>
-        <div class="chip">Grid tactics</div>
+        <div class="chip">Fog of war</div>
+        <div class="chip">Key → chest → exit</div>
       </div>
 
       <div class="stat-grid">
-        <div class="stat-card"><div class="stat-label">Hero HP</div><div id="heroHp" class="stat-value">12 / 12</div></div>
+        <div class="stat-card"><div class="stat-label">Hero HP</div><div id="heroHp" class="stat-value">14 / 14</div></div>
         <div class="stat-card"><div class="stat-label">Attack</div><div id="heroAtk" class="stat-value">3-5</div></div>
-        <div class="stat-card"><div class="stat-label">Enemies</div><div id="enemyCount" class="stat-value">2</div></div>
-        <div class="stat-card"><div class="stat-label">Objective</div><div id="objective" class="stat-value">Clear room</div></div>
+        <div class="stat-card"><div class="stat-label">Enemies</div><div id="enemyCount" class="stat-value">3</div></div>
+        <div class="stat-card"><div class="stat-label">Objective</div><div id="objective" class="stat-value">Find key</div></div>
+        <div class="stat-card"><div class="stat-label">Key</div><div id="keyStatus" class="stat-value">Missing</div></div>
+        <div class="stat-card"><div class="stat-label">Chest</div><div id="chestStatus" class="stat-value">Sealed</div></div>
       </div>
 
       <div id="log" class="log"></div>
@@ -299,13 +315,16 @@
         <strong>Controls</strong><br/>
         WASD / Arrow keys: move or attack<br/>
         Space: wait a turn<br/>
-        R: restart room
+        R: restart room<br/>
+        <br/>
+        <strong>Room beat</strong><br/>
+        Find the key, open the chest, claim the sigil, clear the room, then take the exit.
       </div>
     </aside>
 
     <main class="main">
       <div class="topbar panel">
-        <div id="statusLine" class="status-line">Kill the enemies, then step onto the blue exit.</div>
+        <div id="statusLine" class="status-line">The room starts dark. Scout carefully and don't feed free hits.</div>
         <div class="button-row">
           <button id="restartBtn" type="button">Restart room</button>
         </div>
@@ -317,7 +336,7 @@
         </div>
       </div>
 
-      <div class="footer-note">Prototype target: tactical room feel before any bigger scope.</div>
+      <div class="footer-note">Prototype target: tactical dungeon feel before any larger scope.</div>
     </main>
   </div>
 
@@ -326,18 +345,18 @@
     const height = 12;
 
     const mapRows = [
-      "################",
-      "#..............#",
-      "#..####........#",
-      "#..#..#....!...#",
-      "#..#..#........#",
-      "#..#..####..g..#",
-      "#..#...........#",
-      "#..####.....####",
-      "#.....#........#",
-      "#.@...#..r.....#",
-      "#............E.#",
-      "################"
+      '################',
+      '#....#.....K...#',
+      '#.##.#.#######.#',
+      '#.#..#.....#...#',
+      '#.#.####.#.#.#.#',
+      '#...#..#.#...#.#',
+      '#.#.#C.#.###.#.#',
+      '#.#...##...#.#.#',
+      '#.###....#.#.#.#',
+      '#.@...#r.#..s..#',
+      '#....!#..g..E..#',
+      '################'
     ];
 
     const board = document.getElementById('board');
@@ -346,6 +365,8 @@
     const heroAtkEl = document.getElementById('heroAtk');
     const enemyCountEl = document.getElementById('enemyCount');
     const objectiveEl = document.getElementById('objective');
+    const keyStatusEl = document.getElementById('keyStatus');
+    const chestStatusEl = document.getElementById('chestStatus');
     const statusLineEl = document.getElementById('statusLine');
     const restartBtn = document.getElementById('restartBtn');
 
@@ -362,6 +383,8 @@
       let hero = null;
       let exit = null;
       let potion = null;
+      let key = null;
+      let chest = null;
 
       for (let y = 0; y < height; y += 1) {
         for (let x = 0; x < width; x += 1) {
@@ -370,32 +393,40 @@
           if (ch === '#') type = 'wall';
           if (ch === 'E') { type = 'exit'; exit = { x, y, unlocked: false }; }
           if (ch === '!') { type = 'floor'; potion = { x, y, used: false }; }
-          if (ch === '@') { type = 'floor'; hero = { x, y, hp: 12, maxHp: 12, minAtk: 3, maxAtk: 5, potions: 0 }; }
+          if (ch === 'K') { type = 'floor'; key = { x, y, taken: false }; }
+          if (ch === 'C') { type = 'floor'; chest = { x, y, opened: false, hasSigil: true }; }
+          if (ch === '@') { type = 'floor'; hero = { x, y, hp: 14, maxHp: 14, minAtk: 3, maxAtk: 5, hasKey: false, hasSigil: false }; }
           if (ch === 'r') {
-            type = 'floor';
-            enemies.push({ id: crypto.randomUUID(), kind: 'rat', name: 'Sewer Rat', x, y, hp: 5, maxHp: 5, minAtk: 1, maxAtk: 2, alive: true });
+            enemies.push({ id: crypto.randomUUID(), kind: 'rat', name: 'Sewer Rat', x, y, hp: 5, maxHp: 5, minAtk: 1, maxAtk: 2, alive: true, alert: false });
           }
           if (ch === 'g') {
-            type = 'floor';
-            enemies.push({ id: crypto.randomUUID(), kind: 'guard', name: 'Fallen Guard', x, y, hp: 8, maxHp: 8, minAtk: 2, maxAtk: 3, alive: true });
+            enemies.push({ id: crypto.randomUUID(), kind: 'guard', name: 'Fallen Guard', x, y, hp: 9, maxHp: 9, minAtk: 2, maxAtk: 3, alive: true, alert: false });
+          }
+          if (ch === 's') {
+            enemies.push({ id: crypto.randomUUID(), kind: 'seer', name: 'Wire Seer', x, y, hp: 6, maxHp: 6, minAtk: 2, maxAtk: 4, alive: true, alert: false, range: 5 });
           }
           tiles.push({ x, y, type, glyph: floorGlyphs[(x * 7 + y * 3) % floorGlyphs.length] });
         }
       }
 
+      const discovered = new Set([`${hero.x},${hero.y}`]);
       return {
         tiles,
         hero,
         enemies,
         exit,
         potion,
+        key,
+        chest,
         gameOver: false,
         victory: false,
         turn: 1,
         flash: null,
+        discovered,
+        visible: new Set(),
         logs: [
-          'You step into a single test chamber. Two enemies. One exit. No excuses.',
-          'Shattered-inspired rule: every move matters.'
+          'This room has a little spine now. Don’t drift. Read it.',
+          'Find the key, open the chest, take the sigil, then earn the exit.'
         ]
       };
     }
@@ -414,7 +445,7 @@
 
     function log(msg) {
       state.logs.unshift(msg);
-      state.logs = state.logs.slice(0, 10);
+      state.logs = state.logs.slice(0, 12);
     }
 
     function setFlash(x, y) {
@@ -423,31 +454,66 @@
       setFlash._t = window.setTimeout(() => {
         state.flash = null;
         render();
-      }, 110);
+      }, 120);
     }
 
     function distance(a, b) {
       return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
     }
 
-    function isPassable(x, y) {
+    function isPassable(x, y, ignoreEnemy = null) {
       if (!inBounds(x, y)) return false;
       const tile = tileAt(x, y);
       if (!tile || tile.type === 'wall') return false;
       if (state.hero.x === x && state.hero.y === y) return false;
-      if (enemyAt(x, y)) return false;
+      const foe = enemyAt(x, y);
+      if (foe && foe !== ignoreEnemy) return false;
       return true;
     }
 
-    function attack(attacker, defender, source) {
+    function lineOfSight(x1, y1, x2, y2) {
+      let x = x1;
+      let y = y1;
+      const dx = Math.abs(x2 - x1);
+      const dy = Math.abs(y2 - y1);
+      const sx = x1 < x2 ? 1 : -1;
+      const sy = y1 < y2 ? 1 : -1;
+      let err = dx - dy;
+
+      while (!(x === x2 && y === y2)) {
+        const e2 = err * 2;
+        if (e2 > -dy) { err -= dy; x += sx; }
+        if (e2 < dx) { err += dx; y += sy; }
+        if (x === x2 && y === y2) return true;
+        const tile = tileAt(x, y);
+        if (!tile || tile.type === 'wall') return false;
+      }
+      return true;
+    }
+
+    function computeVisibility() {
+      const visible = new Set();
+      for (let y = 0; y < height; y += 1) {
+        for (let x = 0; x < width; x += 1) {
+          const d = Math.abs(x - state.hero.x) + Math.abs(y - state.hero.y);
+          if (d <= 6 && lineOfSight(state.hero.x, state.hero.y, x, y)) {
+            visible.add(`${x},${y}`);
+            state.discovered.add(`${x},${y}`);
+          }
+        }
+      }
+      state.visible = visible;
+    }
+
+    function attack(attacker, defender, source, verb = 'hits') {
       const dmg = randInt(attacker.minAtk, attacker.maxAtk);
       defender.hp = Math.max(0, defender.hp - dmg);
       setFlash(defender.x, defender.y);
-      log(`${source} hits ${defender.name ?? 'you'} for ${dmg}.`);
+      log(`${source} ${verb} ${defender.name ?? 'you'} for ${dmg}.`);
       if (defender.hp <= 0) {
         if (defender === state.hero) {
           state.gameOver = true;
-          log('You collapse in the room. R to restart.');
+          log('You drop in the chamber. R to reset.');
         } else {
           defender.alive = false;
           log(`${defender.name} falls.`);
@@ -455,22 +521,103 @@
       }
     }
 
-    function maybePickupPotion() {
-      if (!state.potion || state.potion.used) return;
-      if (state.hero.x === state.potion.x && state.hero.y === state.potion.y) {
+    function maybePickupItems() {
+      if (state.key && !state.key.taken && state.hero.x === state.key.x && state.hero.y === state.key.y) {
+        state.key.taken = true;
+        state.hero.hasKey = true;
+        log('You take the brass key. The chest can be opened now.');
+      }
+      if (state.potion && !state.potion.used && state.hero.x === state.potion.x && state.hero.y === state.potion.y) {
         state.potion.used = true;
         const heal = Math.min(state.hero.maxHp - state.hero.hp, 5);
         state.hero.hp += heal;
         log(`You drink the crimson tonic and recover ${heal} HP.`);
       }
+      if (state.chest && !state.chest.opened && state.hero.x === state.chest.x && state.hero.y === state.chest.y && state.hero.hasKey) {
+        state.chest.opened = true;
+        state.hero.hasSigil = true;
+        log('The chest cracks open. Inside: an exit sigil. Now you can truly leave.');
+      }
     }
 
     function updateExitState() {
       const alive = state.enemies.filter(e => e.alive).length;
-      state.exit.unlocked = alive === 0;
-      if (state.exit.unlocked) {
-        objectiveEl.textContent = 'Reach exit';
+      state.exit.unlocked = alive === 0 && state.hero.hasSigil;
+    }
+
+    function objectiveText() {
+      if (state.victory) return 'Complete';
+      if (!state.hero.hasKey) return 'Find key';
+      if (!state.hero.hasSigil) return 'Open chest';
+      if (state.enemies.some(e => e.alive)) return 'Clear enemies';
+      return 'Reach exit';
+    }
+
+    function statusText() {
+      if (state.victory) return 'Victory. The one-room slice has some teeth now.';
+      if (state.gameOver) return 'Defeat. Reset and route the room better.';
+      if (!state.hero.hasKey) return 'Scout the dark and secure the key first.';
+      if (!state.hero.hasSigil) return 'Use the key on the chest. The exit still means nothing without the sigil.';
+      if (state.enemies.some(e => e.alive)) return 'You have the sigil. Now earn the exit by clearing the room.';
+      return 'Exit unlocked. Step onto the blue stairs.';
+    }
+
+    function reconstructStep(cameFrom, startKey, goalKey) {
+      let current = goalKey;
+      while (cameFrom.get(current) && cameFrom.get(current) !== startKey) {
+        current = cameFrom.get(current);
       }
+      const [x, y] = current.split(',').map(Number);
+      return { x, y };
+    }
+
+    function nextStepTowards(sx, sy, tx, ty, ignoreEnemy = null) {
+      const startKey = `${sx},${sy}`;
+      const goalKey = `${tx},${ty}`;
+      const queue = [{ x: sx, y: sy }];
+      const seen = new Set([startKey]);
+      const cameFrom = new Map();
+      const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+
+      while (queue.length) {
+        const cur = queue.shift();
+        if (`${cur.x},${cur.y}` === goalKey) {
+          return reconstructStep(cameFrom, startKey, goalKey);
+        }
+        for (const [dx, dy] of dirs) {
+          const nx = cur.x + dx;
+          const ny = cur.y + dy;
+          const key = `${nx},${ny}`;
+          if (seen.has(key)) continue;
+          if (!(nx === tx && ny === ty) && !isPassable(nx, ny, ignoreEnemy)) continue;
+          const tile = tileAt(nx, ny);
+          if (!tile || tile.type === 'wall') continue;
+          seen.add(key);
+          cameFrom.set(key, `${cur.x},${cur.y}`);
+          queue.push({ x: nx, y: ny });
+        }
+      }
+      return null;
+    }
+
+    function stepAway(enemy, hero) {
+      const dirs = [
+        { x: enemy.x + 1, y: enemy.y },
+        { x: enemy.x - 1, y: enemy.y },
+        { x: enemy.x, y: enemy.y + 1 },
+        { x: enemy.x, y: enemy.y - 1 }
+      ];
+      let best = null;
+      let bestDist = distance(enemy, hero);
+      for (const move of dirs) {
+        if (!isPassable(move.x, move.y, enemy)) continue;
+        const d = Math.abs(move.x - hero.x) + Math.abs(move.y - hero.y);
+        if (d > bestDist) {
+          bestDist = d;
+          best = move;
+        }
+      }
+      return best;
     }
 
     function heroStep(dx, dy) {
@@ -493,82 +640,107 @@
       }
 
       if (tile.type === 'exit' && !state.exit.unlocked) {
-        log('The exit stays sealed until the room is clear.');
+        log(state.hero.hasSigil ? 'The exit stays sealed until the room is clear.' : 'The exit rejects you. The sigil is still hidden in the chest.');
         return;
       }
 
       state.hero.x = nx;
       state.hero.y = ny;
-      maybePickupPotion();
-
+      maybePickupItems();
+      updateExitState();
       if (tile.type === 'exit' && state.exit.unlocked) {
         state.victory = true;
-        log('Room clear. This is the first honest step of the reboot.');
-        statusLineEl.textContent = 'Victory. The one-room slice works.';
+        log('You leave with the sigil. That feels like the right shape for a first slice.');
         render();
         return;
       }
-
       endTurn();
     }
 
     function enemyTurn(enemy) {
       if (!enemy.alive || state.gameOver || state.victory) return;
       const hero = state.hero;
-      if (distance(enemy, hero) === 1) {
+      const dist = distance(enemy, hero);
+      const seesHero = dist <= 7 && lineOfSight(enemy.x, enemy.y, hero.x, hero.y);
+      if (seesHero) enemy.alert = true;
+      if (!enemy.alert) return;
+
+      if (enemy.kind === 'seer') {
+        if (seesHero && (enemy.x === hero.x || enemy.y === hero.y) && dist <= enemy.range) {
+          attack(enemy, hero, enemy.name, 'zaps');
+          return;
+        }
+        if (dist <= 2) {
+          const retreat = stepAway(enemy, hero);
+          if (retreat) {
+            enemy.x = retreat.x; enemy.y = retreat.y; return;
+          }
+        }
+      }
+
+      if (dist === 1) {
         attack(enemy, hero, enemy.name);
         return;
       }
 
-      const moves = [
-        { x: enemy.x + Math.sign(hero.x - enemy.x), y: enemy.y },
-        { x: enemy.x, y: enemy.y + Math.sign(hero.y - enemy.y) },
-        { x: enemy.x + Math.sign(hero.x - enemy.x), y: enemy.y + Math.sign(hero.y - enemy.y) }
-      ];
-
-      for (const move of moves) {
-        if (isPassable(move.x, move.y)) {
-          enemy.x = move.x;
-          enemy.y = move.y;
-          return;
-        }
+      const step = nextStepTowards(enemy.x, enemy.y, hero.x, hero.y, enemy);
+      if (step && isPassable(step.x, step.y, enemy)) {
+        enemy.x = step.x;
+        enemy.y = step.y;
       }
     }
 
     function endTurn() {
       updateExitState();
       for (const enemy of state.enemies) enemyTurn(enemy);
+      computeVisibility();
       updateExitState();
       state.turn += 1;
       render();
     }
 
-    function fovClass(x, y) {
-      const d = Math.abs(x - state.hero.x) + Math.abs(y - state.hero.y);
-      if (d <= 4) return '';
-      if (d <= 6) return 'dim';
-      return 'dark';
+    function tileVisibilityClass(x, y) {
+      const key = `${x},${y}`;
+      if (state.visible.has(key)) return '';
+      if (state.discovered.has(key)) return 'memory';
+      return 'unseen';
+    }
+
+    function itemClass(tile) {
+      if (state.key && !state.key.taken && tile.x === state.key.x && tile.y === state.key.y) return 'item-key';
+      if (state.potion && !state.potion.used && tile.x === state.potion.x && tile.y === state.potion.y) return 'item-potion';
+      if (state.chest && !state.chest.opened && tile.x === state.chest.x && tile.y === state.chest.y) return 'item-chest';
+      if (state.chest && state.chest.opened && state.hero.hasSigil && tile.x === state.chest.x && tile.y === state.chest.y) return 'item-sigil';
+      return '';
     }
 
     function render() {
-      board.innerHTML = '';
+      computeVisibility();
       updateExitState();
+      board.innerHTML = '';
 
       for (const tile of state.tiles) {
         const el = document.createElement('div');
         const classes = ['tile', tile.type === 'wall' ? 'wall' : 'floor'];
         if (tile.type === 'exit') classes.push('exit');
-        if (state.potion && !state.potion.used && tile.x === state.potion.x && tile.y === state.potion.y) classes.push('potion');
+        if (tile.type === 'exit' && !state.exit.unlocked) classes.push('locked');
+        const vis = tileVisibilityClass(tile.x, tile.y);
+        if (vis) classes.push(vis);
+
         const foe = enemyAt(tile.x, tile.y);
-        if (foe) classes.push('actor', foe.kind);
-        if (state.hero.x === tile.x && state.hero.y === tile.y) classes.push('actor', 'hero');
-        if (state.flash === `${tile.x},${tile.y}`) classes.push('flash');
-        const fog = fovClass(tile.x, tile.y);
-        if (fog) classes.push(fog);
+        const visibleNow = state.visible.has(`${tile.x},${tile.y}`);
+        if (visibleNow) {
+          const item = itemClass(tile);
+          if (item) classes.push(item);
+          if (foe) classes.push('actor', foe.kind);
+          if (state.hero.x === tile.x && state.hero.y === tile.y) classes.push('actor', 'hero');
+          if (state.flash === `${tile.x},${tile.y}`) classes.push('flash');
+        }
+
         el.className = classes.join(' ');
-        if (tile.type === 'floor' && !foe && !(state.hero.x === tile.x && state.hero.y === tile.y) && !(state.potion && !state.potion.used && tile.x === state.potion.x && tile.y === state.potion.y)) {
+        if (visibleNow && tile.type === 'floor' && !foe && !(state.hero.x === tile.x && state.hero.y === tile.y) && !itemClass(tile)) {
           el.textContent = tile.glyph;
-          el.style.color = 'rgba(145,170,190,0.14)';
+          el.style.color = 'rgba(145,170,190,0.16)';
         }
         board.appendChild(el);
       }
@@ -577,19 +749,15 @@
       heroHpEl.textContent = `${state.hero.hp} / ${state.hero.maxHp}`;
       heroAtkEl.textContent = `${state.hero.minAtk}-${state.hero.maxAtk}`;
       enemyCountEl.textContent = String(state.enemies.filter(e => e.alive).length);
-      objectiveEl.textContent = state.victory ? 'Complete' : state.exit.unlocked ? 'Reach exit' : 'Clear room';
-
-      if (!state.victory && !state.gameOver) {
-        statusLineEl.textContent = state.exit.unlocked
-          ? 'The exit unlocks blue. Step onto it to finish the room.'
-          : 'Clear the enemies. Positioning matters more than rushing.';
-      } else if (state.gameOver) {
-        statusLineEl.textContent = 'Defeat. Restart and try a cleaner route.';
-      }
+      objectiveEl.textContent = objectiveText();
+      keyStatusEl.textContent = state.hero.hasKey ? 'Taken' : 'Missing';
+      chestStatusEl.textContent = state.hero.hasSigil ? 'Opened' : state.hero.hasKey ? 'Ready' : 'Sealed';
+      statusLineEl.textContent = statusText();
     }
 
     function resetGame() {
       state = freshState();
+      computeVisibility();
       render();
     }
 
@@ -602,8 +770,14 @@
       else if (key === 's' || event.key === 'ArrowDown') heroStep(0, 1);
       else if (key === 'a' || event.key === 'ArrowLeft') heroStep(-1, 0);
       else if (key === 'd' || event.key === 'ArrowRight') heroStep(1, 0);
-      else if (key === ' ') { if (!state.gameOver && !state.victory) { log('You wait and listen.'); endTurn(); } }
-      else if (key === 'r') resetGame();
+      else if (key === ' ') {
+        if (!state.gameOver && !state.victory) {
+          log('You wait and listen. The room answers.');
+          endTurn();
+        }
+      } else if (key === 'r') {
+        resetGame();
+      }
     });
 
     restartBtn.addEventListener('click', resetGame);
