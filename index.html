@@ -40,11 +40,12 @@
     }
 
     .app {
-      min-height: 100%;
+      height: 100dvh;
       display: grid;
       grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
       gap: 16px;
       padding: 16px;
+      overflow: hidden;
     }
 
     .panel {
@@ -61,6 +62,7 @@
       padding: 18px;
       gap: 14px;
       min-height: 0;
+      overflow: auto;
     }
 
     .eyebrow {
@@ -120,8 +122,9 @@
     .stat-value { font-size: 1.02rem; font-weight: 700; }
 
     .log {
-      flex: 1;
-      min-height: 136px;
+      flex: 0 1 auto;
+      min-height: 96px;
+      max-height: 150px;
       overflow: auto;
       background: rgba(0,0,0,0.14);
       border-radius: 14px;
@@ -157,14 +160,26 @@
     }
     .intent-entry:last-child { margin-bottom: 0; }
 
+    .inspect-tip {
+      color: #9cb7ca;
+      font-size: 0.82rem;
+      line-height: 1.35;
+      margin-top: -2px;
+    }
+
     .controls {
       color: var(--muted);
       font-size: 0.9rem;
       line-height: 1.45;
     }
+    .controls-lines,
+    .room-beat-copy {
+      display: inline;
+    }
 
     .main {
       min-width: 0;
+      min-height: 0;
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -205,9 +220,11 @@
     .board-wrap {
       flex: 1;
       min-height: 0;
-      display: grid;
-      place-items: center;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
       padding: 10px;
+      overflow: hidden;
     }
 
     .board-shell {
@@ -330,15 +347,56 @@
       left: 45%; width: 10%; top: 34%; bottom: 24%;
       background: #f4d08a; border-radius: 4px;
     }
+    .item-chest-open .item-core {
+      inset: 42% 18% 18%;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #9d6339 0%, #5e3720 100%);
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.14);
+    }
+    .item-chest-open .item-top {
+      left: 12%; right: 20%; top: 20%; height: 18%;
+      border-radius: 12px 12px 6px 6px;
+      background: linear-gradient(180deg, #e0ad72 0%, #99623b 100%);
+      transform: rotate(-18deg);
+      transform-origin: left bottom;
+    }
+    .item-chest-open .item-detail {
+      left: 42%; width: 12%; top: 48%; bottom: 22%;
+      background: #f4d08a; border-radius: 4px;
+    }
     .item-sigil .item-core {
       inset: 24%;
       background: linear-gradient(180deg, #fff0b8 0%, #a2dcff 100%);
-      clip-path: polygon(50% 0%, 82% 18%, 100% 50%, 82% 82%, 50% 100%, 18% 82%, 0% 50%, 18% 18%);
+      border-radius: 10px;
       box-shadow: 0 0 14px rgba(180,232,255,0.28);
     }
     .item-sigil .item-glow {
       inset: 12%; border-radius: 999px;
       background: radial-gradient(circle, rgba(255,225,143,0.35), rgba(99,184,255,0.04) 70%);
+    }
+    .item-fang .item-core {
+      left: 38%; right: 38%; top: 18%; bottom: 20%;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #bfefff 0%, #64bfff 100%);
+      box-shadow: 0 0 16px rgba(99,184,255,0.35);
+    }
+    .item-fang .item-top {
+      left: 22%; top: 24%; width: 56%; height: 18%;
+      border-radius: 999px 999px 8px 8px;
+      background: linear-gradient(180deg, #effbff 0%, #8fe1ff 100%);
+      transform: rotate(-34deg);
+      transform-origin: center;
+    }
+    .item-fang .item-detail {
+      left: 28%; top: 52%; width: 44%; height: 10%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #18314b 0%, #79cfff 55%, #18314b 100%);
+      opacity: 0.92;
+    }
+    .item-fang .item-glow {
+      inset: 16%;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(130,223,255,0.26), rgba(99,184,255,0.02) 72%);
     }
 
     .sprite {
@@ -462,6 +520,55 @@
     .hunter .sprite-tail, .hunter .sprite-ear-left, .hunter .sprite-ear-right, .hunter .sprite-eye { display: none; }
 
     .flash { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.16), 0 0 18px rgba(255, 225, 143, 0.35); transform: scale(1.05); }
+    .hero-step::before,
+    .hero-step::after,
+    .hero-attack::after {
+      content: '';
+      position: absolute;
+      inset: 5px;
+      border-radius: 10px;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .hero-step::before {
+      inset: auto auto 6px 50%;
+      width: calc(var(--tile-size) * 0.18);
+      height: calc(var(--tile-size) * 0.18);
+      margin-left: calc(var(--tile-size) * -0.09);
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(164, 235, 255, 0.95), rgba(96, 200, 255, 0.18) 72%, rgba(96, 200, 255, 0));
+      box-shadow: 0 0 12px rgba(104, 210, 255, 0.42);
+    }
+    .hero-step::after {
+      border: 1px dashed rgba(122, 220, 255, 0.44);
+      box-shadow: inset 0 0 0 1px rgba(122, 220, 255, 0.12);
+    }
+    .hero-attack::after {
+      inset: 4px;
+      border: 2px solid rgba(255, 190, 116, 0.55);
+      box-shadow: inset 0 0 0 1px rgba(255, 216, 150, 0.12), 0 0 12px rgba(255, 170, 92, 0.18);
+    }
+    .hero-attack .tile-crosshair,
+    .hero-step .tile-crosshair {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .hero-attack .tile-crosshair::before,
+    .hero-attack .tile-crosshair::after {
+      content: '';
+      position: absolute;
+      background: rgba(255, 205, 138, 0.88);
+      border-radius: 999px;
+      box-shadow: 0 0 10px rgba(255, 173, 92, 0.34);
+    }
+    .hero-attack .tile-crosshair::before {
+      left: 50%; top: 22%; bottom: 22%; width: 2px; transform: translateX(-50%);
+    }
+    .hero-attack .tile-crosshair::after {
+      top: 50%; left: 22%; right: 22%; height: 2px; transform: translateY(-50%);
+    }
     .impact {
       position: absolute;
       top: 4px;
@@ -487,7 +594,71 @@
       text-shadow: 0 0 10px rgba(255,120,80,0.35);
       z-index: 1;
     }
-    .threat { box-shadow: inset 0 0 0 2px rgba(255, 122, 122, 0.28), 0 0 12px rgba(255, 90, 90, 0.18); }
+    .threat-line {
+      box-shadow: inset 0 0 0 1px rgba(255, 160, 110, 0.24);
+      background-image: linear-gradient(135deg, rgba(255, 186, 112, 0.08), rgba(255, 92, 92, 0.04));
+    }
+    .threat {
+      box-shadow: inset 0 0 0 2px rgba(255, 122, 122, 0.34), 0 0 14px rgba(255, 90, 90, 0.2);
+      background-image: radial-gradient(circle at center, rgba(255, 126, 126, 0.14), rgba(255, 126, 126, 0));
+    }
+    .path-preview {
+      box-shadow: inset 0 0 0 1px rgba(122, 203, 255, 0.24), 0 0 10px rgba(76, 181, 255, 0.1);
+      background-image: radial-gradient(circle at center, rgba(122, 203, 255, 0.1), rgba(122, 203, 255, 0));
+    }
+    .path-preview-danger {
+      box-shadow: inset 0 0 0 2px rgba(255, 122, 122, 0.5), 0 0 14px rgba(255, 90, 90, 0.16);
+      background-image: radial-gradient(circle at center, rgba(255, 126, 126, 0.18), rgba(255, 126, 126, 0));
+    }
+    .inspect-focus {
+      box-shadow: inset 0 0 0 2px rgba(255, 225, 143, 0.55), 0 0 16px rgba(255, 196, 92, 0.18);
+    }
+    .route-commit {
+      box-shadow: inset 0 0 0 2px rgba(122, 220, 255, 0.48), 0 0 18px rgba(84, 196, 255, 0.22);
+    }
+    .route-commit::after {
+      content: 'GO';
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      padding: 2px 5px;
+      border-radius: 999px;
+      background: rgba(12, 26, 42, 0.92);
+      border: 1px solid rgba(122, 220, 255, 0.34);
+      color: #a4ebff;
+      font-size: 0.54rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .objective-target {
+      box-shadow: inset 0 0 0 2px rgba(255, 225, 143, 0.34), 0 0 18px rgba(255, 225, 143, 0.18);
+      background-image: radial-gradient(circle at center, rgba(255, 225, 143, 0.14), rgba(255, 225, 143, 0));
+    }
+    .objective-marker {
+      position: absolute;
+      right: 4px;
+      bottom: 4px;
+      width: calc(var(--tile-size) * 0.24);
+      height: calc(var(--tile-size) * 0.24);
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      font-size: calc(var(--tile-size) * 0.16);
+      font-weight: 900;
+      color: #ffe18f;
+      background: rgba(12, 18, 28, 0.92);
+      border: 1px solid rgba(255, 225, 143, 0.34);
+      box-shadow: 0 0 12px rgba(255, 225, 143, 0.24);
+      pointer-events: none;
+      z-index: 4;
+      animation: objectivePulse 1.6s ease-in-out infinite;
+    }
+    @keyframes objectivePulse {
+      0%, 100% { transform: scale(0.95); opacity: 0.78; }
+      50% { transform: scale(1.08); opacity: 1; }
+    }
     .hpbar {
       position: absolute;
       left: 12%;
@@ -505,6 +676,62 @@
     }
     .hero .hpfill {
       background: linear-gradient(90deg, #8ae8ff 0%, #d2fff1 100%);
+    }
+    .intent-badge {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      top: 5%;
+      min-height: 15%;
+      padding: 2px 4px;
+      border-radius: 999px;
+      background: rgba(8, 14, 22, 0.9);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #dfefff;
+      font-size: 0.48rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      line-height: 1.1;
+      text-align: center;
+      text-transform: uppercase;
+      z-index: 2;
+      pointer-events: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.28);
+    }
+    .intent-badge.zap { color: #efdfff; border-color: rgba(198, 153, 255, 0.36); }
+    .intent-badge.lunge { color: #ffd8bf; border-color: rgba(255, 170, 122, 0.34); }
+    .intent-badge.rush { color: #ffe3ae; border-color: rgba(255, 190, 116, 0.34); }
+    .intent-badge.melee { color: #ffd6d0; border-color: rgba(255, 130, 130, 0.34); }
+    .intent-badge.retreat { color: #bbe8ff; border-color: rgba(122, 203, 255, 0.34); }
+    .intent-badge.close { color: #d7f2ff; border-color: rgba(122, 203, 255, 0.24); }
+    .ghost {
+      box-shadow: inset 0 0 0 1px rgba(184, 212, 235, 0.1), 0 0 10px rgba(90, 124, 154, 0.08);
+      background-image: radial-gradient(circle at center, rgba(170, 205, 232, 0.08), rgba(170, 205, 232, 0));
+    }
+    .ghost::before {
+      content: 'LAST';
+      color: #98b6cb;
+      border-color: rgba(152, 182, 203, 0.22);
+      background: rgba(9, 16, 24, 0.84);
+    }
+    .ghost .sprite {
+      opacity: 0.34;
+      filter: grayscale(0.35) brightness(0.86) drop-shadow(0 4px 10px rgba(0,0,0,0.24));
+    }
+    .ghost-age {
+      position: absolute;
+      right: 5px;
+      bottom: 5px;
+      padding: 1px 4px;
+      border-radius: 999px;
+      background: rgba(9, 16, 24, 0.84);
+      border: 1px solid rgba(152, 182, 203, 0.18);
+      color: #8fa9bc;
+      font-size: 0.44rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      z-index: 3;
+      pointer-events: none;
     }
     .unseen::after { content: none !important; }
 
@@ -608,7 +835,7 @@
 
     @media (max-width: 980px) {
       :root { --tile-size: min(calc((100vw - 40px) / 16), calc((58vh - 22px) / 12), 38px); }
-      .app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; overflow: auto; }
+      .app { height: auto; min-height: 100dvh; grid-template-columns: 1fr; grid-template-rows: auto 1fr; overflow: auto; }
       .sidebar { order: 2; }
       .main { order: 1; }
       .board-wrap { padding: 0; }
@@ -616,15 +843,40 @@
 
     @media (max-height: 760px) {
       :root { --tile-size: min(calc((100vw - 390px) / 16), calc((100vh - 220px) / 12), 42px); }
-      .sidebar { gap: 10px; padding: 14px; }
+      .sidebar { gap: 8px; padding: 12px; }
       .topbar { padding: 12px 14px; }
+      h1 { font-size: clamp(1.7rem, 2.5vw, 2.4rem); }
+      .sub, .controls, .log-entry, .intent-entry { font-size: 0.8rem; }
+      .sub { line-height: 1.3; }
+      .chips { gap: 6px; }
+      .chip { padding: 5px 8px; font-size: 0.68rem; }
+      .run-banner { display: none; }
+      .stat-grid { gap: 8px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .stat-card { padding: 8px 10px; }
+      .stat-label { font-size: 0.66rem; margin-bottom: 4px; }
+      .stat-value { font-size: 0.92rem; }
+      .log { min-height: 84px; max-height: 108px; padding: 8px 10px; }
+      .inspect-tip { display: none; }
+      .controls { line-height: 1.28; }
+      .room-beat-copy { display: none; }
+    }
+
+    @media (max-height: 700px) {
+      .chips,
+      .controls {
+        display: none;
+      }
+      .log {
+        min-height: 72px;
+        max-height: 88px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="app">
     <aside class="sidebar panel">
-      <div class="eyebrow">CyberPG v0.1.8</div>
+      <div class="eyebrow">CyberPG v0.1.17</div>
       <h1>One Room.<br/>Sharper Teeth.</h1>
       <p class="sub">A tougher Shattered Pixel Dungeon-inspired room: scout in the dark, snag the keycard, crack the cache chest, claim Volt Fang, survive the pressure, then escape.</p>
 
@@ -660,14 +912,25 @@
         <div id="intentList"></div>
       </div>
 
+      <div class="inspect-tip">Hover a visible tile to preview damage or route. Click or tap a distant visible tile to lock the route readout, then click it again to advance. Gold pulse marker = current objective.</div>
+
       <div class="controls">
         <strong>Controls</strong><br/>
-        WASD / Arrow keys: move or attack<br/>
-        Space: wait a turn<br/>
-        R: restart room<br/>
-        <br/>
-        <strong>Room beat</strong><br/>
-        Find the key, open the chest, claim the sigil, clear the room, then take the exit.
+        <span class="controls-lines">
+          WASD / Arrow keys: move or attack<br/>
+          Click / tap adjacent tile: move or attack<br/>
+          Hover visible tile: preview route<br/>
+          Click locked route again: advance one turn<br/>
+          Blue pips: safe step options<br/>
+          Amber brackets: bump attack target<br/>
+          Space: wait a turn<br/>
+          R: restart room<br/>
+        </span>
+        <span class="room-beat-copy">
+          <br/>
+          <strong>Room beat</strong><br/>
+          Find the key, open the chest, claim the sigil, clear the room, then take the exit.
+        </span>
       </div>
     </aside>
 
@@ -676,6 +939,7 @@
         <div id="statusLine" class="status-line">The room starts dark. Scout carefully and don't feed free hits.</div>
         <div class="button-row">
           <button id="startBtn" type="button">Begin run</button>
+          <button id="waitBtn" type="button">Wait turn</button>
           <button id="restartBtn" type="button">Restart room</button>
         </div>
       </div>
@@ -692,7 +956,7 @@
 
   <div id="overlay" class="overlay">
     <div class="overlay-card">
-      <div class="overlay-kicker">CyberPG v0.1.8</div>
+      <div class="overlay-kicker">CyberPG v0.1.17</div>
       <div id="overlayTitle" class="overlay-title">Room complete</div>
       <div id="overlayBody" class="overlay-body"></div>
       <div id="rewardGrid" class="reward-grid"></div>
@@ -735,6 +999,7 @@
     const turnStatusEl = document.getElementById('turnStatus');
     const statusLineEl = document.getElementById('statusLine');
     const startBtn = document.getElementById('startBtn');
+    const waitBtn = document.getElementById('waitBtn');
     const restartBtn = document.getElementById('restartBtn');
     const intentListEl = document.getElementById('intentList');
     const overlayEl = document.getElementById('overlay');
@@ -824,6 +1089,7 @@
         flash: null,
         discovered,
         visible: new Set(),
+        threatLines: new Set(),
         threatTiles: new Set(),
         logs: [
           'Cyborg kittygirl on point. Read the room before you feed it free hits.',
@@ -831,10 +1097,14 @@
         ],
         alarmRaised: false,
         floaters: [],
+        cacheLoot: null,
+        lastSeenEnemies: {},
         chosenReward: null,
         storedBoon,
         introOpen: true,
-        started: false
+        started: false,
+        hoverTile: null,
+        lockedTile: null
       };
       const boon = rewardChoices.find(choice => choice.id === storedBoon);
       if (boon) {
@@ -877,6 +1147,38 @@
         state.floaters = state.floaters.filter(f => f.id !== id);
         render();
       }, kind === 'kill' ? 620 : 420);
+    }
+
+    function findChestLootDropSpot() {
+      const candidates = [
+        { x: state.chest.x + 1, y: state.chest.y },
+        { x: state.chest.x - 1, y: state.chest.y },
+        { x: state.chest.x, y: state.chest.y - 1 },
+        { x: state.chest.x, y: state.chest.y + 1 },
+        { x: state.chest.x, y: state.chest.y }
+      ];
+      for (const spot of candidates) {
+        if (!inBounds(spot.x, spot.y)) continue;
+        const tile = tileAt(spot.x, spot.y);
+        if (!tile || tile.type === 'wall' || tile.type === 'exit') continue;
+        if (enemyAt(spot.x, spot.y)) continue;
+        return spot;
+      }
+      return { x: state.chest.x, y: state.chest.y };
+    }
+
+    function claimCacheLoot() {
+      if (!state.cacheLoot || state.cacheLoot.taken) return;
+      state.cacheLoot.taken = true;
+      state.hero.hasSigil = true;
+      state.hero.relic = 'Volt Fang';
+      state.hero.maxHp += 2;
+      state.hero.hp = Math.min(state.hero.maxHp, state.hero.hp + 2);
+      state.hero.minAtk = 4;
+      state.hero.maxAtk = 7;
+      pushFloater(state.hero.x, state.hero.y, 'VOLT FANG', 'heal');
+      pushFloater(state.hero.x, state.hero.y, 'SIGIL', 'kill');
+      log('You wrench Volt Fang free, socket the sigil core, and feel your bite sharpen instantly.');
     }
 
     function shakeBoard() {
@@ -933,6 +1235,22 @@
         }
       }
       state.visible = visible;
+      for (const enemy of state.enemies) {
+        if (!enemy.alive) {
+          delete state.lastSeenEnemies[enemy.id];
+          continue;
+        }
+        if (visible.has(`${enemy.x},${enemy.y}`)) {
+          state.lastSeenEnemies[enemy.id] = {
+            id: enemy.id,
+            x: enemy.x,
+            y: enemy.y,
+            kind: enemy.kind,
+            name: enemy.name,
+            turn: state.turn
+          };
+        }
+      }
     }
 
     function attack(attacker, defender, source, verb = 'hits', bonus = 0) {
@@ -948,11 +1266,30 @@
           log('You drop in the chamber. R to reset.');
         } else {
           defender.alive = false;
+          delete state.lastSeenEnemies[defender.id];
           defender.corpseTurn = state.turn;
           pushFloater(defender.x, defender.y, 'DOWN', 'kill');
           log(`${defender.name} falls.`);
         }
       }
+    }
+
+    function damageRange(attacker, bonus = 0) {
+      return { min: attacker.minAtk + bonus, max: attacker.maxAtk + bonus };
+    }
+
+    function attackOutcomeSummary(attacker, defender, bonus = 0) {
+      const range = damageRange(attacker, bonus);
+      const guaranteedKill = range.min >= defender.hp;
+      const canKill = range.max >= defender.hp;
+      const minLeft = Math.max(0, defender.hp - range.max);
+      const maxLeft = Math.max(0, defender.hp - range.min);
+      const killText = guaranteedKill
+        ? ' Guaranteed kill.'
+        : canKill
+          ? ' Can kill on a high roll.'
+          : ` Leaves ${minLeft}-${maxLeft} HP.`;
+      return `Hit for ${range.min}-${range.max}.${killText}`;
     }
 
     function maybePickupItems() {
@@ -972,22 +1309,20 @@
       }
       if (state.chest && !state.chest.opened && state.hero.x === state.chest.x && state.hero.y === state.chest.y && state.hero.hasKey) {
         state.chest.opened = true;
-        state.hero.hasSigil = true;
-        state.hero.relic = 'Volt Fang';
-        state.hero.maxHp += 2;
-        state.hero.hp = Math.min(state.hero.maxHp, state.hero.hp + 2);
-        state.hero.minAtk = 4;
-        state.hero.maxAtk = 7;
         state.alarmRaised = true;
-        pushFloater(state.hero.x, state.hero.y, 'VOLT FANG', 'heal');
-        pushFloater(state.hero.x, state.hero.y, 'SIGIL', 'kill');
+        const lootSpot = findChestLootDropSpot();
+        state.cacheLoot = { x: lootSpot.x, y: lootSpot.y, taken: false };
+        pushFloater(lootSpot.x, lootSpot.y, 'VOLT FANG', 'heal');
         if (!state.enemies.some(enemy => enemy.kind === 'hunter' && enemy.alive)) {
           state.enemies.push({ id: crypto.randomUUID(), kind: 'hunter', name: 'Vault Hunter', x: 13, y: 1, hp: 7, maxHp: 7, minAtk: 2, maxAtk: 4, alive: true, alert: true, corpseTurn: null });
           log('A Vault Hunter tears into the room from the north hall.');
         }
         for (const enemy of state.enemies) enemy.alert = true;
         shakeBoard();
-        log('The cache chest splits wide. Volt Fang bites into your grip and the sigil core lights cold blue. The alarm answers instantly.');
+        log(`The cache chest splits wide and spits Volt Fang ${lootSpot.x === state.chest.x && lootSpot.y === state.chest.y ? 'into your square' : 'onto the floor nearby'}. The alarm answers instantly.`);
+      }
+      if (state.cacheLoot && !state.cacheLoot.taken && state.hero.x === state.cacheLoot.x && state.hero.y === state.cacheLoot.y) {
+        claimCacheLoot();
       }
     }
 
@@ -1012,7 +1347,25 @@
       return true;
     }
 
+    function straightLineTiles(x1, y1, x2, y2) {
+      const tiles = [];
+      if (x1 !== x2 && y1 !== y2) return tiles;
+      if (x1 === x2) {
+        const step = y2 > y1 ? 1 : -1;
+        for (let y = y1 + step; y !== y2; y += step) {
+          tiles.push({ x: x1, y });
+        }
+        return tiles;
+      }
+      const step = x2 > x1 ? 1 : -1;
+      for (let x = x1 + step; x !== x2; x += step) {
+        tiles.push({ x, y: y1 });
+      }
+      return tiles;
+    }
+
     function markThreatTiles() {
+      const threatLines = new Set();
       const threatTiles = new Set();
       const hero = state.hero;
       for (const enemy of state.enemies) {
@@ -1020,21 +1373,316 @@
         const dist = distance(enemy, hero);
         const seesHero = dist <= 7 && lineOfSight(enemy.x, enemy.y, hero.x, hero.y);
         if (enemy.kind === 'seer' && seesHero && (enemy.x === hero.x || enemy.y === hero.y) && dist <= enemy.range) {
+          for (const tile of straightLineTiles(enemy.x, enemy.y, hero.x, hero.y)) {
+            threatLines.add(`${tile.x},${tile.y}`);
+          }
           threatTiles.add(`${hero.x},${hero.y}`);
         }
         if (enemy.kind === 'guard' && seesHero && dist === enemy.lungeRange && clearStraightLine(enemy.x, enemy.y, hero.x, hero.y)) {
+          const lungeStep = nextStepTowards(enemy.x, enemy.y, hero.x, hero.y, enemy);
+          if (lungeStep) {
+            threatLines.add(`${lungeStep.x},${lungeStep.y}`);
+          }
           threatTiles.add(`${hero.x},${hero.y}`);
         }
       }
+      state.threatLines = threatLines;
       state.threatTiles = threatTiles;
     }
 
     function objectiveText() {
       if (state.victory) return 'Complete';
       if (!state.hero.hasKey) return 'Find keycard';
-      if (!state.hero.hasSigil) return state.chest.opened ? 'Claim sigil' : 'Open cache chest';
+      if (!state.hero.hasSigil) return state.chest.opened ? 'Claim Volt Fang' : 'Open cache chest';
       if (state.enemies.some(e => e.alive)) return 'Clear enemies';
       return 'Reach exit';
+    }
+
+    function currentObjectiveTarget() {
+      if (state.victory) return null;
+      if (!state.hero.hasKey && state.key && !state.key.taken) return { x: state.key.x, y: state.key.y, label: 'Keycard' };
+      if (!state.hero.hasSigil) {
+        if (state.cacheLoot && !state.cacheLoot.taken) return { x: state.cacheLoot.x, y: state.cacheLoot.y, label: 'Volt Fang' };
+        if (state.chest) return { x: state.chest.x, y: state.chest.y, label: 'Chest' };
+      }
+      if (!state.exit?.unlocked) return null;
+      return { x: state.exit.x, y: state.exit.y, label: 'Exit' };
+    }
+
+    function tileKey(x, y) {
+      return `${x},${y}`;
+    }
+
+    function getActivePreviewTile() {
+      return state.lockedTile || state.hoverTile;
+    }
+
+    function reconstructPath(cameFrom, goalKey) {
+      const path = [];
+      let current = goalKey;
+      while (cameFrom.has(current)) {
+        const [x, y] = current.split(',').map(Number);
+        path.unshift({ x, y });
+        current = cameFrom.get(current);
+      }
+      return path;
+    }
+
+    function findPath(sx, sy, tx, ty, { ignoreEnemy = null, allowGoalOccupied = false } = {}) {
+      const startKey = tileKey(sx, sy);
+      const goalKey = tileKey(tx, ty);
+      const queue = [{ x: sx, y: sy }];
+      const seen = new Set([startKey]);
+      const cameFrom = new Map();
+      const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+
+      while (queue.length) {
+        const cur = queue.shift();
+        if (tileKey(cur.x, cur.y) === goalKey) {
+          return reconstructPath(cameFrom, goalKey);
+        }
+        for (const [dx, dy] of dirs) {
+          const nx = cur.x + dx;
+          const ny = cur.y + dy;
+          const key = tileKey(nx, ny);
+          if (seen.has(key)) continue;
+          const isGoal = nx === tx && ny === ty;
+          if (!isGoal || !allowGoalOccupied) {
+            if (!isPassable(nx, ny, ignoreEnemy)) continue;
+          } else {
+            const tile = tileAt(nx, ny);
+            if (!tile || tile.type === 'wall') continue;
+          }
+          seen.add(key);
+          cameFrom.set(key, tileKey(cur.x, cur.y));
+          queue.push({ x: nx, y: ny });
+        }
+      }
+      return null;
+    }
+
+    function routeToEnemyPressure(tx, ty) {
+      const candidates = [
+        { x: tx + 1, y: ty },
+        { x: tx - 1, y: ty },
+        { x: tx, y: ty + 1 },
+        { x: tx, y: ty - 1 }
+      ];
+      let best = null;
+      for (const spot of candidates) {
+        if (!isPassable(spot.x, spot.y)) continue;
+        const path = findPath(state.hero.x, state.hero.y, spot.x, spot.y);
+        if (!path) continue;
+        if (!best || path.length < best.path.length) best = { path, target: spot };
+      }
+      return best;
+    }
+
+    function itemSummaryAt(x, y) {
+      if (state.key && !state.key.taken && state.key.x === x && state.key.y === y) {
+        return state.hero.hasKey ? 'Access keycard already taken.' : 'Access keycard. Grab it to wake the cache chest.';
+      }
+      if (state.potion && !state.potion.used && state.potion.x === x && state.potion.y === y) {
+        return 'Crimson tonic. A small emergency heal.';
+      }
+      if (state.chest && !state.chest.opened && state.chest.x === x && state.chest.y === y) {
+        return state.hero.hasKey
+          ? 'Cache chest. Ready to open — but the room will get loud.'
+          : 'Cache chest. Locked until you steal the keycard.';
+      }
+      if (state.cacheLoot && !state.cacheLoot.taken && state.cacheLoot.x === x && state.cacheLoot.y === y) {
+        return 'Volt Fang. Step onto it to claim the relic and socket the sigil core.';
+      }
+      if (state.chest && state.chest.opened && state.chest.x === x && state.chest.y === y) {
+        return state.cacheLoot && !state.cacheLoot.taken
+          ? 'Opened cache chest. Volt Fang got kicked loose nearby.'
+          : 'Opened cache chest. Its prize has already been claimed.';
+      }
+      return '';
+    }
+
+    function directThreatsAt(x, y, { skipEnemyId = null } = {}) {
+      const heroPos = { x, y };
+      const threats = [];
+      for (const enemy of state.enemies) {
+        if (!enemy.alive || enemy.id === skipEnemyId) continue;
+        const dist = distance(enemy, heroPos);
+        const seesHero = dist <= 7 && lineOfSight(enemy.x, enemy.y, x, y);
+        if (enemy.kind === 'seer' && seesHero && (enemy.x === x || enemy.y === y) && dist <= enemy.range) {
+          threats.push(`${enemy.name} zap line`);
+          continue;
+        }
+        if (enemy.kind === 'guard' && seesHero && dist === enemy.lungeRange && clearStraightLine(enemy.x, enemy.y, x, y)) {
+          threats.push(`${enemy.name} lunge`);
+          continue;
+        }
+        if (dist === 1) {
+          const packBonus = enemy.kind === 'rat' && state.enemies.some(other => other !== enemy && other.alive && other.id !== skipEnemyId && distance(other, heroPos) === 1);
+          if (enemy.kind === 'hunter') threats.push(`${enemy.name} carve`);
+          else if (packBonus) threats.push(`${enemy.name} pack bite`);
+          else threats.push(`${enemy.name} melee`);
+        }
+      }
+      return threats;
+    }
+
+    function landingThreatText(x, y, options = {}) {
+      const threats = directThreatsAt(x, y, options);
+      if (!threats.length) return ' Landing there looks clean this turn.';
+      if (threats.length === 1) return ` Landing there is threatened by ${threats[0]}.`;
+      return ` Landing there is threatened by ${threats.slice(0, -1).join(', ')} and ${threats[threats.length - 1]}.`;
+    }
+
+    function firstStepThreatText(route, options = {}) {
+      if (!route?.length) return '';
+      const nextStep = route[0];
+      const threats = directThreatsAt(nextStep.x, nextStep.y, options);
+      if (!threats.length) return ' First step stays clean.';
+      if (threats.length === 1) return ` First step is threatened by ${threats[0]}.`;
+      return ` First step is threatened by ${threats.slice(0, -1).join(', ')} and ${threats[threats.length - 1]}.`;
+    }
+
+    function intentData(enemy) {
+      const hero = state.hero;
+      const dist = distance(enemy, hero);
+      const seesHero = dist <= 7 && lineOfSight(enemy.x, enemy.y, hero.x, hero.y);
+      const base = { visible: seesHero || enemy.alert, range: damageRange(enemy) };
+      if (!enemy.alive) return null;
+      if (!enemy.alert && !seesHero) {
+        return {
+          ...base,
+          label: 'Lurk',
+          kind: 'close',
+          panel: `${enemy.name}: lurking off-angle`,
+          detail: 'Not committed yet.'
+        };
+      }
+      if (enemy.kind === 'seer' && seesHero && (enemy.x === hero.x || enemy.y === hero.y) && dist <= enemy.range) {
+        return {
+          ...base,
+          label: 'Zap',
+          kind: 'zap',
+          panel: `${enemy.name}: zap line ${base.range.min}-${base.range.max}`,
+          detail: `Beam for ${base.range.min}-${base.range.max}.`
+        };
+      }
+      if (enemy.kind === 'guard' && seesHero && dist === enemy.lungeRange && clearStraightLine(enemy.x, enemy.y, hero.x, hero.y)) {
+        return {
+          ...base,
+          label: 'Lunge',
+          kind: 'lunge',
+          panel: `${enemy.name}: lunge setup ${base.range.min + 1}-${base.range.max + 1}`,
+          detail: `Lunge hit for ${base.range.min + 1}-${base.range.max + 1}.`
+        };
+      }
+      if (enemy.kind === 'hunter' && seesHero && dist <= 3) {
+        return {
+          ...base,
+          label: 'Rush',
+          kind: 'rush',
+          panel: `${enemy.name}: rushdown ${base.range.min}-${base.range.max}`,
+          detail: `Pressure hit for ${base.range.min}-${base.range.max}.`
+        };
+      }
+      if (dist === 1) {
+        const packBonus = enemy.kind === 'rat' && state.enemies.some(other => other !== enemy && other.alive && distance(other, hero) === 1);
+        const bonus = packBonus ? 1 : 0;
+        return {
+          ...base,
+          label: packBonus ? 'Pack' : 'Melee',
+          kind: 'melee',
+          panel: `${enemy.name}: ${packBonus ? 'pack bite' : 'melee hit'} ${base.range.min + bonus}-${base.range.max + bonus}`,
+          detail: `${packBonus ? 'Pack bite' : 'Melee hit'} for ${base.range.min + bonus}-${base.range.max + bonus}.`
+        };
+      }
+      if (enemy.kind === 'seer' && dist <= 2) {
+        return {
+          ...base,
+          label: 'Retreat',
+          kind: 'retreat',
+          panel: `${enemy.name}: retreat`,
+          detail: 'Will try to back off.'
+        };
+      }
+      return {
+        ...base,
+        label: 'Close',
+        kind: 'close',
+        panel: `${enemy.name}: closing in`,
+        detail: 'Advancing toward you.'
+      };
+    }
+
+    function intentBadgeData(enemy) {
+      const data = intentData(enemy);
+      return data ? { label: data.label, kind: data.kind } : null;
+    }
+
+    function previewDataFor(x, y) {
+      if (!state.started || state.gameOver || state.victory) return null;
+      const key = tileKey(x, y);
+      if (!state.visible.has(key)) return null;
+      const tile = tileAt(x, y);
+      if (!tile) return null;
+      const foe = enemyAt(x, y);
+      const dist = Math.abs(x - state.hero.x) + Math.abs(y - state.hero.y);
+      let path = [];
+      let summary = '';
+
+      if (state.hero.x === x && state.hero.y === y) {
+        summary = `You are here. ${state.hero.hp}/${state.hero.maxHp} HP, ${state.hero.minAtk}-${state.hero.maxAtk} attack.`;
+      } else if (foe) {
+        if (dist === 1) {
+          path = [{ x, y }];
+          summary = `${foe.name}: ${foe.hp}/${foe.maxHp} HP. ${attackOutcomeSummary(state.hero, foe)}${landingThreatText(state.hero.x, state.hero.y, { skipEnemyId: foe.hp <= state.hero.maxAtk ? foe.id : null })} Click or tap to attack.`;
+        } else {
+          const route = routeToEnemyPressure(x, y);
+          if (route) {
+            path = route.path;
+            summary = `${foe.name}: ${foe.hp}/${foe.maxHp} HP. ${path.length} steps to pressure it.${firstStepThreatText(path)}${landingThreatText(route.target.x, route.target.y)} ${attackOutcomeSummary(state.hero, foe)}`;
+          } else {
+            summary = `${foe.name}: ${foe.hp}/${foe.maxHp} HP. No clean route from here.`;
+          }
+        }
+      } else if (tile.type === 'wall') {
+        summary = 'Wall. Hard cover and hard stop.';
+      } else {
+        path = findPath(state.hero.x, state.hero.y, x, y) || [];
+        const itemSummary = itemSummaryAt(x, y);
+        if (tile.type === 'exit') {
+          summary = state.exit.unlocked
+            ? `Exit stairs. ${path.length || 1} steps to leave.`
+            : state.hero.hasSigil
+              ? 'Exit stairs. Still sealed until every enemy is down.'
+              : 'Exit stairs. Dead until you claim the sigil from the chest.';
+        } else if (itemSummary) {
+          summary = `${itemSummary}${path.length ? ` ${path.length} steps away.` : ''}${path.length ? firstStepThreatText(path) : ''}${path.length ? landingThreatText(x, y) : ''}`;
+        } else if (path.length) {
+          summary = `${path.length} steps to this tile.${firstStepThreatText(path)}${landingThreatText(x, y)}`;
+        } else {
+          summary = 'Floor tile. Hold ground here if the threat lines stay clean.';
+        }
+      }
+
+      const commitReady = Boolean(state.lockedTile && state.lockedTile.x === x && state.lockedTile.y === y && path.length);
+      if (commitReady) {
+        summary += foe
+          ? ' Click again to advance one safe step toward pressure.'
+          : ' Click again to advance one step along this route.';
+      }
+
+      return {
+        targetKey: key,
+        route: path,
+        commitReady,
+        pathSet: new Set(path.map(step => tileKey(step.x, step.y))),
+        summary
+      };
+    }
+
+    function activePreviewData() {
+      const tile = getActivePreviewTile();
+      return tile ? previewDataFor(tile.x, tile.y) : null;
     }
 
     function statusText() {
@@ -1043,10 +1691,10 @@
       if (state.gameOver) return 'Defeat. Reset and route the room better.';
       if (!state.hero.hasKey) return 'Scout the dark and secure the keycard first.';
       if (!state.hero.hasSigil) return state.chest.opened
-        ? 'Sigil loaded and alarm screaming. Finish the room and earn the stairs.'
+        ? 'Volt Fang is loose. Step onto it, claim the relic, then survive the alarm.'
         : 'Use the keycard on the cache chest. The exit still means nothing without the sigil chip.';
       if (state.enemies.some(e => e.alive)) {
-        if (state.threatTiles.has(`${state.hero.x},${state.hero.y}`)) return 'Danger tile: move or eat a punish turn.';
+        if (state.threatTiles.has(`${state.hero.x},${state.hero.y}`)) return 'Danger tile: move or eat a punish turn. Red telegraphs show the line.';
         if (state.alarmRaised) return 'Alarm raised. The room is awake now — finish the fight and leave.';
         return 'Mono-Claw hot and sigil loaded. Clear the room, then leave.';
       }
@@ -1054,20 +1702,8 @@
     }
 
     function enemyIntentText(enemy) {
-      const hero = state.hero;
-      const dist = distance(enemy, hero);
-      const seesHero = dist <= 7 && lineOfSight(enemy.x, enemy.y, hero.x, hero.y);
-      if (!enemy.alive) return null;
-      if (!enemy.alert && !seesHero) return `${enemy.name}: lurking`;
-      if (enemy.kind === 'seer' && seesHero && (enemy.x === hero.x || enemy.y === hero.y) && dist <= enemy.range) return `${enemy.name}: zap line`;
-      if (enemy.kind === 'guard' && seesHero && dist === enemy.lungeRange && clearStraightLine(enemy.x, enemy.y, hero.x, hero.y)) return `${enemy.name}: lunge setup`;
-      if (enemy.kind === 'hunter' && seesHero && dist <= 3) return `${enemy.name}: rushdown`;
-      if (dist === 1) {
-        const packBonus = enemy.kind === 'rat' && state.enemies.some(other => other !== enemy && other.alive && distance(other, hero) === 1);
-        return `${enemy.name}: ${packBonus ? 'pack bite' : 'melee hit'}`;
-      }
-      if (enemy.kind === 'seer' && dist <= 2) return `${enemy.name}: retreat`;
-      return `${enemy.name}: closing in`;
+      const data = intentData(enemy);
+      return data ? `${data.panel} — ${data.detail}` : null;
     }
 
     function renderIntentPanel() {
@@ -1233,6 +1869,61 @@
       endTurn();
     }
 
+    function waitTurn() {
+      if (state.introOpen && !state.started) beginRun();
+      if (state.gameOver || state.victory) return;
+      log('You wait and listen. The room answers.');
+      endTurn();
+    }
+
+    function setHoverTile(x, y) {
+      if (state.lockedTile) return;
+      const next = x === null || y === null ? null : { x, y };
+      const same = (!next && !state.hoverTile) || (next && state.hoverTile && state.hoverTile.x === next.x && state.hoverTile.y === next.y);
+      if (same) return;
+      state.hoverTile = next;
+      render();
+    }
+
+    function commitLockedRoute(preview) {
+      if (!preview?.route?.length) return false;
+      const nextStep = preview.route[0];
+      state.hoverTile = null;
+      heroStep(nextStep.x - state.hero.x, nextStep.y - state.hero.y);
+      if (state.gameOver || state.victory) {
+        state.lockedTile = null;
+      } else if (state.hero.x === state.lockedTile?.x && state.hero.y === state.lockedTile?.y) {
+        state.lockedTile = null;
+      }
+      return true;
+    }
+
+    function handleBoardClick(x, y) {
+      const tile = tileAt(x, y);
+      if (!tile) return;
+      const key = tileKey(x, y);
+      if (!state.visible.has(key) && state.started) return;
+      const dx = x - state.hero.x;
+      const dy = y - state.hero.y;
+      if (Math.abs(dx) + Math.abs(dy) === 1) {
+        state.lockedTile = null;
+        state.hoverTile = null;
+        heroStep(dx, dy);
+        return;
+      }
+      if (!state.started || state.gameOver || state.victory) return;
+      if (state.lockedTile && state.lockedTile.x === x && state.lockedTile.y === y) {
+        const preview = previewDataFor(x, y);
+        if (!commitLockedRoute(preview)) {
+          state.lockedTile = null;
+          render();
+        }
+      } else {
+        state.lockedTile = { x, y };
+        render();
+      }
+    }
+
     function enemyTurn(enemy) {
       if (!enemy.alive || state.gameOver || state.victory) return;
       const hero = state.hero;
@@ -1301,12 +1992,30 @@
       if (state.key && !state.key.taken && tile.x === state.key.x && tile.y === state.key.y) return 'item-key';
       if (state.potion && !state.potion.used && tile.x === state.potion.x && tile.y === state.potion.y) return 'item-potion';
       if (state.chest && !state.chest.opened && tile.x === state.chest.x && tile.y === state.chest.y) return 'item-chest';
-      if (state.chest && state.chest.opened && state.hero.hasSigil && tile.x === state.chest.x && tile.y === state.chest.y) return 'item-sigil';
+      if (state.cacheLoot && !state.cacheLoot.taken && tile.x === state.cacheLoot.x && tile.y === state.cacheLoot.y) return 'item-fang';
+      if (state.chest && state.chest.opened && tile.x === state.chest.x && tile.y === state.chest.y) return 'item-chest-open';
       return '';
     }
 
     function itemMarkup() {
       return '<span class="item-glow"></span><span class="item-top"></span><span class="item-core"></span><span class="item-detail"></span>';
+    }
+
+    function rememberedEnemyAt(x, y) {
+      return Object.values(state.lastSeenEnemies).find(enemy => enemy.x === x && enemy.y === y) || null;
+    }
+
+    function heroStepHintAt(x, y) {
+      if (!state.started || state.gameOver || state.victory) return '';
+      const dx = Math.abs(x - state.hero.x);
+      const dy = Math.abs(y - state.hero.y);
+      if (dx + dy !== 1) return '';
+      const foe = enemyAt(x, y);
+      if (foe) return 'hero-attack';
+      const tile = tileAt(x, y);
+      if (!tile || tile.type === 'wall') return '';
+      if (tile.type === 'exit' && !state.exit.unlocked) return '';
+      return 'hero-step';
     }
 
     function spriteMarkup() {
@@ -1317,6 +2026,8 @@
       computeVisibility();
       updateExitState();
       markThreatTiles();
+      const preview = activePreviewData();
+      const objectiveTarget = currentObjectiveTarget();
       board.innerHTML = '';
 
       for (const tile of state.tiles) {
@@ -1328,20 +2039,33 @@
         if (vis) classes.push(vis);
 
         const foe = enemyAt(tile.x, tile.y);
-        const visibleNow = state.visible.has(`${tile.x},${tile.y}`);
+        const visibleNow = state.visible.has(tileKey(tile.x, tile.y));
+        const memoryEnemy = !visibleNow && vis === 'memory' ? rememberedEnemyAt(tile.x, tile.y) : null;
         if (visibleNow) {
           const item = itemClass(tile);
           if (item) classes.push(item);
           if (foe) classes.push('actor', foe.kind);
           if (state.hero.x === tile.x && state.hero.y === tile.y) classes.push('actor', 'hero');
-          if (state.flash === `${tile.x},${tile.y}`) classes.push('flash');
-          if (state.threatTiles.has(`${tile.x},${tile.y}`)) classes.push('threat');
+          const heroHint = heroStepHintAt(tile.x, tile.y);
+          if (heroHint) classes.push(heroHint);
+          if (state.flash === tileKey(tile.x, tile.y)) classes.push('flash');
+          if (state.threatLines.has(tileKey(tile.x, tile.y))) classes.push('threat-line');
+          if (state.threatTiles.has(tileKey(tile.x, tile.y))) classes.push('threat');
+          if (preview?.pathSet.has(tileKey(tile.x, tile.y))) classes.push('path-preview');
+          if (preview?.route?.length && preview.route[0].x === tile.x && preview.route[0].y === tile.y && directThreatsAt(tile.x, tile.y).length) classes.push('path-preview-danger');
+          if (preview?.targetKey === tileKey(tile.x, tile.y)) classes.push('inspect-focus');
+          if (preview?.commitReady && preview?.targetKey === tileKey(tile.x, tile.y)) classes.push('route-commit');
+          if (objectiveTarget && objectiveTarget.x === tile.x && objectiveTarget.y === tile.y) classes.push('objective-target');
+        } else if (memoryEnemy) {
+          classes.push('actor', memoryEnemy.kind, 'ghost');
         }
 
         const corpseHere = state.enemies.some(enemy => !enemy.alive && enemy.corpseTurn !== null && enemy.x === tile.x && enemy.y === tile.y && state.turn - enemy.corpseTurn <= 2);
         if (visibleNow && corpseHere) classes.push('corpse');
 
         el.className = classes.join(' ');
+        el.dataset.x = String(tile.x);
+        el.dataset.y = String(tile.y);
         if (visibleNow) {
           const item = itemClass(tile);
           if (item) {
@@ -1357,9 +2081,40 @@
           sprite.innerHTML = spriteMarkup();
           el.appendChild(sprite);
         }
+        if (memoryEnemy) {
+          const ghostSprite = document.createElement('div');
+          ghostSprite.className = 'sprite';
+          ghostSprite.innerHTML = spriteMarkup();
+          el.appendChild(ghostSprite);
+          const age = document.createElement('div');
+          age.className = 'ghost-age';
+          age.textContent = `T-${Math.max(0, state.turn - memoryEnemy.turn)}`;
+          el.appendChild(age);
+        }
+        if (visibleNow && foe) {
+          const badge = intentBadgeData(foe);
+          if (badge) {
+            const badgeEl = document.createElement('div');
+            badgeEl.className = `intent-badge ${badge.kind}`.trim();
+            badgeEl.textContent = badge.label;
+            el.appendChild(badgeEl);
+          }
+        }
         if (visibleNow && tile.type === 'floor' && !foe && !(state.hero.x === tile.x && state.hero.y === tile.y) && !itemClass(tile)) {
           el.textContent = tile.glyph;
           el.style.color = 'rgba(145,170,190,0.16)';
+        }
+        if (visibleNow && classes.includes('hero-attack')) {
+          const crosshair = document.createElement('div');
+          crosshair.className = 'tile-crosshair';
+          el.appendChild(crosshair);
+        }
+        if (visibleNow && objectiveTarget && objectiveTarget.x === tile.x && objectiveTarget.y === tile.y) {
+          const marker = document.createElement('div');
+          marker.className = 'objective-marker';
+          marker.textContent = '✦';
+          marker.setAttribute('aria-label', `${objectiveTarget.label} objective`);
+          el.appendChild(marker);
         }
         board.appendChild(el);
 
@@ -1388,13 +2143,14 @@
       enemyCountEl.textContent = String(state.enemies.filter(e => e.alive).length);
       objectiveEl.textContent = objectiveText();
       keyStatusEl.textContent = state.hero.hasKey ? 'Taken' : 'Missing';
-      chestStatusEl.textContent = state.hero.hasSigil ? 'Opened' : state.hero.hasKey ? 'Ready' : 'Sealed';
-      relicStatusEl.textContent = state.hero.relic;
+      chestStatusEl.textContent = !state.hero.hasKey ? 'Sealed' : (state.cacheLoot && !state.cacheLoot.taken) ? 'Burst open' : state.chest.opened ? 'Opened' : 'Ready';
+      relicStatusEl.textContent = (state.cacheLoot && !state.cacheLoot.taken) ? 'Dropped nearby' : state.hero.relic;
       legacyStatusEl.textContent = boonLabel(state.storedBoon);
       turnStatusEl.textContent = String(state.turn);
-      statusLineEl.textContent = statusText();
+      statusLineEl.textContent = preview?.summary || statusText();
       startBtn.textContent = state.introOpen && !state.started ? 'Start run' : 'Run started';
       startBtn.disabled = !state.introOpen || state.started;
+      waitBtn.disabled = state.gameOver || state.victory;
       renderIntentPanel();
       renderOverlay();
     }
@@ -1414,17 +2170,30 @@
       else if (key === 's' || event.key === 'ArrowDown') heroStep(0, 1);
       else if (key === 'a' || event.key === 'ArrowLeft') heroStep(-1, 0);
       else if (key === 'd' || event.key === 'ArrowRight') heroStep(1, 0);
-      else if (key === ' ') {
-        if (!state.gameOver && !state.victory) {
-          log('You wait and listen. The room answers.');
-          endTurn();
-        }
-      } else if (key === 'r') {
+      else if (key === ' ') waitTurn();
+      else if (key === 'r') {
         resetGame();
       }
     });
 
+    board.addEventListener('mousemove', (event) => {
+      const tileEl = event.target.closest('.tile');
+      if (!tileEl) return;
+      setHoverTile(Number(tileEl.dataset.x), Number(tileEl.dataset.y));
+    });
+
+    board.addEventListener('mouseleave', () => {
+      if (!state.lockedTile) setHoverTile(null, null);
+    });
+
+    board.addEventListener('click', (event) => {
+      const tileEl = event.target.closest('.tile');
+      if (!tileEl) return;
+      handleBoardClick(Number(tileEl.dataset.x), Number(tileEl.dataset.y));
+    });
+
     startBtn.addEventListener('click', beginRun);
+    waitBtn.addEventListener('click', waitTurn);
     restartBtn.addEventListener('click', resetGame);
     overlayRestartBtn.addEventListener('click', () => {
       if (state.introOpen && !state.started) beginRun();

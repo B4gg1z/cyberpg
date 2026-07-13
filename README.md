@@ -15,6 +15,12 @@ Build a **one-room playable test slice** before expanding scope.
 
 ## Controls
 - `WASD` or arrow keys: move / attack
+- Click / tap an adjacent tile: move / attack
+- Hover a visible tile: preview route and target readout
+- Click / tap a distant visible tile: lock the route preview
+- Click that locked route again: advance one turn along it
+- Multi-step route previews now call out whether the **first committed step** is threatened
+- Adjacent enemy previews now show attack range / kill odds
 - `Space`: wait a turn
 - `R`: restart the room
 
@@ -40,7 +46,7 @@ Shattered Pixel Dungeon feel to chase in the reboot:
 - strong tile readability over flashy effects
 
 ## Current status
-- current project: CyberPG v0.1.8 one-room prototype with a cyborg kittygirl hero, readable enemy badges/silhouettes, stronger chest/sigil payoff, better combat outcome readability, and a cleaner public-demo shell.
+- current project: CyberPG v0.1.17 one-room prototype with a cyborg kittygirl hero, readable enemy badges/silhouettes, stronger chest/sigil payoff, explicit Volt Fang drop/pickup flow, combat-preview landing threat warnings, first-step route danger warnings for click-again movement commitment, attack-range / kill-odds inspect text, on-board enemy intent badges with damage callouts, a gold pulse marker for the live room objective, click-again route commitment, last-seen enemy ghost memory, better combat outcome readability, a cleaner public-demo shell, and mouse/touch route preview controls.
 
 ## Asset / licensing posture
 - current visuals are authored directly in `index.html` as HTML/CSS shapes and gradients
