@@ -23,6 +23,7 @@ Build a **one-room playable test slice** before expanding scope.
 - Adjacent enemy previews now show attack range / kill odds
 - `F`: use a stored heal flask charge
 - `Space`: wait a turn
+- Hover your own tile or read the wait button to see whether holding position is safe this turn
 - `R`: restart the room
 
 ## Run locally
@@ -47,7 +48,7 @@ Shattered Pixel Dungeon feel to chase in the reboot:
 - strong tile readability over flashy effects
 
 ## Current status
-- current project: CyberPG v0.1.18 one-room prototype with a cyborg kittygirl hero, readable enemy badges/silhouettes, stronger chest/sigil payoff, explicit Volt Fang drop/pickup flow, combat-preview landing threat warnings, first-step route danger warnings for click-again movement commitment, attack-range / kill-odds inspect text, on-board enemy intent badges with damage callouts, a gold pulse marker for the live room objective, click-again route commitment, last-seen enemy ghost memory, manual heal flask inventory/use, better combat outcome readability, a cleaner public-demo shell, and mouse/touch route preview controls.
+- current project: CyberPG v0.1.22 one-room prototype with a cyborg kittygirl hero, readable enemy badges/silhouettes, stronger chest/sigil payoff, explicit Volt Fang drop/pickup flow, combat-preview landing threat warnings, first-step route danger warnings for click-again movement commitment, attack-range / kill-odds inspect text, on-board enemy intent badges with damage callouts, a gold pulse marker for the live room objective, an objective route readout with step count / first-step safety / seen state, click-again route commitment, last-seen enemy ghost memory, manual heal flask inventory/use, a heavier heal-flask payoff that can actually swing the first room, truthful hold-position danger readouts on the hero tile and wait button, hunter rush telegraphs plus a real two-tile rush carve, richer in-room environment dressing with vents/cables/terminals/crates/coolant, better combat outcome readability, a cleaner public-demo shell, and mouse/touch route preview controls.
 
 ## Asset / licensing posture
 - current visuals are authored directly in `index.html` as HTML/CSS shapes and gradients

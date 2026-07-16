@@ -120,6 +120,13 @@
     }
 
     .stat-value { font-size: 1.02rem; font-weight: 700; }
+    .stat-meta {
+      color: #9cb7ca;
+      font-size: 0.73rem;
+      line-height: 1.3;
+      margin-top: 6px;
+      min-height: 1.9em;
+    }
 
     .log {
       flex: 0 1 auto;
@@ -285,6 +292,67 @@
       text-shadow: 0 0 12px rgba(99,184,255,0.45);
     }
     .exit.locked::after { color: rgba(99,184,255,0.35); text-shadow: none; }
+    .decor-vent::before,
+    .decor-cable::before,
+    .decor-terminal::before,
+    .decor-terminal::after,
+    .decor-crate::before,
+    .decor-crate::after,
+    .decor-coolant::before,
+    .decor-coolant::after {
+      content: '';
+      position: absolute;
+      pointer-events: none;
+    }
+    .decor-vent::before {
+      inset: 22% 16%;
+      border-radius: 8px;
+      background:
+        repeating-linear-gradient(180deg, rgba(201, 227, 255, 0.18) 0 2px, rgba(9, 18, 28, 0) 2px 5px),
+        linear-gradient(180deg, rgba(12, 26, 38, 0.9), rgba(4, 10, 16, 0.35));
+      box-shadow: inset 0 0 0 1px rgba(122,203,255,0.16);
+    }
+    .decor-cable::before {
+      left: 12%; right: 12%; top: 48%; height: 10%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(36, 52, 70, 0.15), rgba(113, 213, 255, 0.55), rgba(36, 52, 70, 0.15));
+      box-shadow: 0 0 10px rgba(86, 192, 255, 0.16);
+      transform: rotate(-18deg);
+    }
+    .decor-terminal::before {
+      right: 10%; top: 14%; width: 22%; height: 46%;
+      border-radius: 6px;
+      background: linear-gradient(180deg, rgba(9, 18, 28, 0.92), rgba(25, 44, 61, 0.92));
+      box-shadow: inset 0 0 0 1px rgba(122,203,255,0.18);
+    }
+    .decor-terminal::after {
+      right: 14%; top: 20%; width: 14%; height: 18%;
+      border-radius: 4px;
+      background: linear-gradient(180deg, rgba(138, 232, 255, 0.75), rgba(53, 140, 185, 0.2));
+      box-shadow: 0 0 10px rgba(138, 232, 255, 0.18);
+    }
+    .decor-crate::before {
+      left: 12%; top: 18%; width: 30%; height: 30%;
+      border-radius: 6px;
+      background: linear-gradient(180deg, rgba(110, 78, 42, 0.9), rgba(58, 38, 22, 0.82));
+      box-shadow: inset 0 0 0 1px rgba(255, 210, 140, 0.12);
+    }
+    .decor-crate::after {
+      left: 20%; top: 26%; width: 14%; height: 14%;
+      border-radius: 3px;
+      background: rgba(255, 222, 160, 0.18);
+    }
+    .decor-coolant::before {
+      left: 22%; right: 22%; bottom: 16%; height: 18%;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(104, 228, 255, 0.32), rgba(104, 228, 255, 0.04) 72%, rgba(104, 228, 255, 0));
+      box-shadow: 0 0 12px rgba(104, 228, 255, 0.12);
+    }
+    .decor-coolant::after {
+      left: 32%; top: 18%; width: 10%; height: 10%;
+      border-radius: 999px;
+      background: rgba(175, 247, 255, 0.35);
+    }
 
     .item-art {
       position: absolute;
@@ -876,7 +944,7 @@
 <body>
   <div class="app">
     <aside class="sidebar panel">
-      <div class="eyebrow">CyberPG v0.1.18</div>
+      <div class="eyebrow">CyberPG v0.1.22</div>
       <h1>One Room.<br/>Sharper Teeth.</h1>
       <p class="sub">A tougher Shattered Pixel Dungeon-inspired room: scout in the dark, snag the keycard, crack the cache chest, claim Volt Fang, survive the pressure, then escape.</p>
 
@@ -897,7 +965,7 @@
         <div class="stat-card"><div class="stat-label">Hero HP</div><div id="heroHp" class="stat-value">14 / 14</div></div>
         <div class="stat-card"><div class="stat-label">Attack</div><div id="heroAtk" class="stat-value">3-5</div></div>
         <div class="stat-card"><div class="stat-label">Enemies</div><div id="enemyCount" class="stat-value">3</div></div>
-        <div class="stat-card"><div class="stat-label">Objective</div><div id="objective" class="stat-value">Find keycard</div></div>
+        <div class="stat-card"><div class="stat-label">Objective</div><div id="objective" class="stat-value">Find keycard</div><div id="objectiveMeta" class="stat-meta">Route pending</div></div>
         <div class="stat-card"><div class="stat-label">Key</div><div id="keyStatus" class="stat-value">Missing</div></div>
         <div class="stat-card"><div class="stat-label">Chest</div><div id="chestStatus" class="stat-value">Sealed</div></div>
         <div class="stat-card"><div class="stat-label">Relic</div><div id="relicStatus" class="stat-value">None</div></div>
@@ -959,7 +1027,7 @@
 
   <div id="overlay" class="overlay">
     <div class="overlay-card">
-      <div class="overlay-kicker">CyberPG v0.1.18</div>
+      <div class="overlay-kicker">CyberPG v0.1.22</div>
       <div id="overlayTitle" class="overlay-title">Room complete</div>
       <div id="overlayBody" class="overlay-body"></div>
       <div id="rewardGrid" class="reward-grid"></div>
@@ -995,6 +1063,7 @@
     const heroAtkEl = document.getElementById('heroAtk');
     const enemyCountEl = document.getElementById('enemyCount');
     const objectiveEl = document.getElementById('objective');
+    const objectiveMetaEl = document.getElementById('objectiveMeta');
     const keyStatusEl = document.getElementById('keyStatus');
     const chestStatusEl = document.getElementById('chestStatus');
     const relicStatusEl = document.getElementById('relicStatus');
@@ -1072,7 +1141,7 @@
             enemies.push({ id: crypto.randomUUID(), kind: 'seer', name: 'Wire Seer', x, y, hp: 6, maxHp: 6, minAtk: 2, maxAtk: 4, alive: true, alert: false, range: 5, corpseTurn: null });
           }
           if (ch === 'h') {
-            enemies.push({ id: crypto.randomUUID(), kind: 'hunter', name: 'Vault Hunter', x, y, hp: 7, maxHp: 7, minAtk: 2, maxAtk: 4, alive: true, alert: false, corpseTurn: null });
+            enemies.push({ id: crypto.randomUUID(), kind: 'hunter', name: 'Vault Hunter', x, y, hp: 7, maxHp: 7, minAtk: 2, maxAtk: 4, alive: true, alert: false, rushRange: 2, corpseTurn: null });
           }
           tiles.push({ x, y, type, glyph: floorGlyphs[(x * 7 + y * 3) % floorGlyphs.length] });
         }
@@ -1302,6 +1371,10 @@
       return state.flasks > 0 && state.hero.hp < state.hero.maxHp && !state.gameOver && !state.victory;
     }
 
+    function flaskHealAmount() {
+      return Math.max(8, Math.ceil(state.hero.maxHp * 0.55));
+    }
+
     function useFlask() {
       if (state.introOpen && !state.started) beginRun();
       if (state.gameOver || state.victory) return false;
@@ -1316,10 +1389,10 @@
         return false;
       }
       state.flasks -= 1;
-      const heal = Math.min(state.hero.maxHp - state.hero.hp, 5);
+      const heal = Math.min(state.hero.maxHp - state.hero.hp, flaskHealAmount());
       state.hero.hp += heal;
       if (heal > 0) pushFloater(state.hero.x, state.hero.y, `+${heal}`, 'heal');
-      log(`You burn a flask charge and recover ${heal} HP.`);
+      log(`You burn a flask charge and recover ${heal} HP. That is enough to re-enter the fight instead of just nicking the edge off.`);
       endTurn();
       return true;
     }
@@ -1345,7 +1418,7 @@
         state.cacheLoot = { x: lootSpot.x, y: lootSpot.y, taken: false };
         pushFloater(lootSpot.x, lootSpot.y, 'VOLT FANG', 'heal');
         if (!state.enemies.some(enemy => enemy.kind === 'hunter' && enemy.alive)) {
-          state.enemies.push({ id: crypto.randomUUID(), kind: 'hunter', name: 'Vault Hunter', x: 13, y: 1, hp: 7, maxHp: 7, minAtk: 2, maxAtk: 4, alive: true, alert: true, corpseTurn: null });
+          state.enemies.push({ id: crypto.randomUUID(), kind: 'hunter', name: 'Vault Hunter', x: 13, y: 1, hp: 7, maxHp: 7, minAtk: 2, maxAtk: 4, alive: true, alert: true, rushRange: 2, corpseTurn: null });
           log('A Vault Hunter tears into the room from the north hall.');
         }
         for (const enemy of state.enemies) enemy.alert = true;
@@ -1376,6 +1449,12 @@
         if (tileAt(x, y1)?.type === 'wall') return false;
       }
       return true;
+    }
+
+    function hunterRushReady(enemy, heroPos = state.hero) {
+      if (enemy.kind !== 'hunter') return false;
+      const rushRange = enemy.rushRange || 2;
+      return distance(enemy, heroPos) === rushRange && clearStraightLine(enemy.x, enemy.y, heroPos.x, heroPos.y);
     }
 
     function straightLineTiles(x1, y1, x2, y2) {
@@ -1416,6 +1495,13 @@
           }
           threatTiles.add(`${hero.x},${hero.y}`);
         }
+        if (enemy.kind === 'hunter' && seesHero && hunterRushReady(enemy, hero)) {
+          const rushStep = nextStepTowards(enemy.x, enemy.y, hero.x, hero.y, enemy);
+          if (rushStep) {
+            threatLines.add(`${rushStep.x},${rushStep.y}`);
+          }
+          threatTiles.add(`${hero.x},${hero.y}`);
+        }
       }
       state.threatLines = threatLines;
       state.threatTiles = threatTiles;
@@ -1438,6 +1524,28 @@
       }
       if (!state.exit?.unlocked) return null;
       return { x: state.exit.x, y: state.exit.y, label: 'Exit' };
+    }
+
+    function objectiveMetaText(target = currentObjectiveTarget()) {
+      if (!target) {
+        return state.victory ? 'Room complete' : 'No live target';
+      }
+      if (state.hero.x === target.x && state.hero.y === target.y) {
+        return `${target.label} underfoot`;
+      }
+      const path = findPath(state.hero.x, state.hero.y, target.x, target.y) || [];
+      if (!path.length) {
+        return `${target.label}: no clean route`;
+      }
+      const steps = path.length;
+      const seenTag = state.visible.has(tileKey(target.x, target.y))
+        ? 'seen'
+        : state.discovered.has(tileKey(target.x, target.y))
+          ? 'remembered'
+          : 'unseen';
+      const firstStepThreats = directThreatsAt(path[0].x, path[0].y);
+      const firstStepTag = firstStepThreats.length ? 'step threatened' : 'step clean';
+      return `${target.label}: ${steps} step${steps === 1 ? '' : 's'} · ${firstStepTag} · ${seenTag}`;
     }
 
     function tileKey(x, y) {
@@ -1514,7 +1622,7 @@
         return state.hero.hasKey ? 'Access keycard already taken.' : 'Access keycard. Grab it to wake the cache chest.';
       }
       if (state.potion && !state.potion.used && state.potion.x === x && state.potion.y === y) {
-        return `Crimson tonic. Pocket a heal flask charge for later. ${state.flasks > 0 ? `Current charges: ${state.flasks}.` : 'Use F or the topbar button when you need it.'}`;
+        return `Crimson tonic. Pocket a heal flask charge for later. It now heals ${flaskHealAmount()} HP before max-cap truncation. ${state.flasks > 0 ? `Current charges: ${state.flasks}.` : 'Use F or the topbar button when you need it.'}`;
       }
       if (state.chest && !state.chest.opened && state.chest.x === x && state.chest.y === y) {
         return state.hero.hasKey
@@ -1545,6 +1653,10 @@
         }
         if (enemy.kind === 'guard' && seesHero && dist === enemy.lungeRange && clearStraightLine(enemy.x, enemy.y, x, y)) {
           threats.push(`${enemy.name} lunge`);
+          continue;
+        }
+        if (enemy.kind === 'hunter' && seesHero && hunterRushReady(enemy, heroPos)) {
+          threats.push(`${enemy.name} rush carve`);
           continue;
         }
         if (dist === 1) {
@@ -1606,13 +1718,13 @@
           detail: `Lunge hit for ${base.range.min + 1}-${base.range.max + 1}.`
         };
       }
-      if (enemy.kind === 'hunter' && seesHero && dist <= 3) {
+      if (enemy.kind === 'hunter' && seesHero && hunterRushReady(enemy, hero)) {
         return {
           ...base,
           label: 'Rush',
           kind: 'rush',
-          panel: `${enemy.name}: rushdown ${base.range.min}-${base.range.max}`,
-          detail: `Pressure hit for ${base.range.min}-${base.range.max}.`
+          panel: `${enemy.name}: rush carve ${base.range.min + 1}-${base.range.max + 1}`,
+          detail: `Will dash in and carve for ${base.range.min + 1}-${base.range.max + 1}.`
         };
       }
       if (dist === 1) {
@@ -1661,7 +1773,7 @@
       let summary = '';
 
       if (state.hero.x === x && state.hero.y === y) {
-        summary = `You are here. ${state.hero.hp}/${state.hero.maxHp} HP, ${state.hero.minAtk}-${state.hero.maxAtk} attack.`;
+        summary = `You are here. ${state.hero.hp}/${state.hero.maxHp} HP, ${state.hero.minAtk}-${state.hero.maxAtk} attack.${landingThreatText(x, y)} Space or the wait button holds position for one turn.`;
       } else if (foe) {
         if (dist === 1) {
           path = [{ x, y }];
@@ -1720,8 +1832,14 @@
       if (state.introOpen && !state.started) return `Begin the run when you’re ready. Kitty ears up. First route matters. ${state.flasks ? `Starting flask charges: ${state.flasks}.` : ''}`.trim();
       if (state.victory) return 'Victory. Kittygirl out, sigil secured.';
       if (state.gameOver) return 'Defeat. Reset and route the room better.';
+      const holdThreats = directThreatsAt(state.hero.x, state.hero.y);
+      if (holdThreats.length) {
+        return holdThreats.length === 1
+          ? `Holding here means eating ${holdThreats[0]}. Move unless the trade is worth it.`
+          : `Holding here means eating ${holdThreats.slice(0, -1).join(', ')} and ${holdThreats[holdThreats.length - 1]}. Move unless the trade is worth it.`;
+      }
       if (state.flasks > 0 && state.hero.hp <= Math.max(4, Math.floor(state.hero.maxHp * 0.45))) {
-        return `You have ${state.flasks} flask charge${state.flasks === 1 ? '' : 's'} ready. F or the topbar button buys breathing room, but it costs the turn.`;
+        return `You have ${state.flasks} flask charge${state.flasks === 1 ? '' : 's'} ready. F or the topbar button buys breathing room, costs the turn, and restores up to ${flaskHealAmount()} HP.`;
       }
       if (!state.hero.hasKey) return 'Scout the dark and secure the keycard first.';
       if (!state.hero.hasSigil) return state.chest.opened
@@ -1906,7 +2024,14 @@
     function waitTurn() {
       if (state.introOpen && !state.started) beginRun();
       if (state.gameOver || state.victory) return;
-      log('You wait and listen. The room answers.');
+      const holdThreats = directThreatsAt(state.hero.x, state.hero.y);
+      if (!holdThreats.length) {
+        log('You wait and listen. No immediate punish line bites yet.');
+      } else if (holdThreats.length === 1) {
+        log(`You wait and listen. Holding here means eating ${holdThreats[0]}.`);
+      } else {
+        log(`You wait and listen. Holding here means eating ${holdThreats.slice(0, -1).join(', ')} and ${holdThreats[holdThreats.length - 1]}.`);
+      }
       endTurn();
     }
 
@@ -1991,6 +2116,18 @@
         return;
       }
 
+      if (enemy.kind === 'hunter' && seesHero && hunterRushReady(enemy, hero)) {
+        const step = nextStepTowards(enemy.x, enemy.y, hero.x, hero.y, enemy);
+        if (step && isPassable(step.x, step.y, enemy)) {
+          enemy.x = step.x;
+          enemy.y = step.y;
+        }
+        if (distance(enemy, hero) === 1) {
+          attack(enemy, hero, enemy.name, 'rushes into', 1);
+        }
+        return;
+      }
+
       if (dist === 1) {
         const packBonus = enemy.kind === 'rat' && state.enemies.some(other => other !== enemy && other.alive && distance(other, hero) === 1) ? 1 : 0;
         const hunterBonus = enemy.kind === 'hunter' && dist === 1 ? 1 : 0;
@@ -2031,6 +2168,17 @@
       return '';
     }
 
+    function decorClass(tile) {
+      const key = tileKey(tile.x, tile.y);
+      if (tile.type !== 'floor') return '';
+      if (['2,1', '9,3', '13,8'].includes(key)) return 'decor-terminal';
+      if (['4,5', '8,8', '12,10'].includes(key)) return 'decor-cable';
+      if (['3,9', '10,7'].includes(key)) return 'decor-crate';
+      if (['1,5', '7,1', '14,3'].includes(key)) return 'decor-vent';
+      if (['6,9', '11,1'].includes(key)) return 'decor-coolant';
+      return '';
+    }
+
     function itemMarkup() {
       return '<span class="item-glow"></span><span class="item-top"></span><span class="item-core"></span><span class="item-detail"></span>';
     }
@@ -2067,6 +2215,8 @@
       for (const tile of state.tiles) {
         const el = document.createElement('div');
         const classes = ['tile', tile.type === 'wall' ? 'wall' : 'floor'];
+        const decor = decorClass(tile);
+        if (decor) classes.push(decor);
         if (tile.type === 'exit') classes.push('exit');
         if (tile.type === 'exit' && !state.exit.unlocked) classes.push('locked');
         const vis = tileVisibilityClass(tile.x, tile.y);
@@ -2176,6 +2326,7 @@
       heroAtkEl.textContent = `${state.hero.minAtk}-${state.hero.maxAtk}`;
       enemyCountEl.textContent = String(state.enemies.filter(e => e.alive).length);
       objectiveEl.textContent = objectiveText();
+      objectiveMetaEl.textContent = objectiveMetaText(objectiveTarget);
       keyStatusEl.textContent = state.hero.hasKey ? 'Taken' : 'Missing';
       chestStatusEl.textContent = !state.hero.hasKey ? 'Sealed' : (state.cacheLoot && !state.cacheLoot.taken) ? 'Burst open' : state.chest.opened ? 'Opened' : 'Ready';
       relicStatusEl.textContent = (state.cacheLoot && !state.cacheLoot.taken) ? 'Dropped nearby' : state.hero.relic;
@@ -2185,6 +2336,8 @@
       statusLineEl.textContent = preview?.summary || statusText();
       startBtn.textContent = state.introOpen && !state.started ? 'Start run' : 'Run started';
       startBtn.disabled = !state.introOpen || state.started;
+      const holdThreats = directThreatsAt(state.hero.x, state.hero.y);
+      waitBtn.textContent = holdThreats.length ? `Wait turn · ${holdThreats.length} threat${holdThreats.length === 1 ? '' : 's'}` : 'Wait turn · safe';
       waitBtn.disabled = state.gameOver || state.victory;
       useFlaskBtn.disabled = !canUseFlask();
       renderIntentPanel();
