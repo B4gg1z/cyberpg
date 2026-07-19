@@ -247,6 +247,10 @@
       position: relative;
       overflow: hidden;
     }
+    .board-shell.alarm-live {
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 18px 34px rgba(0,0,0,0.26), 0 0 0 1px rgba(255, 115, 115, 0.18), 0 0 26px rgba(255, 92, 92, 0.16);
+      animation: alarmFrame 1.3s ease-in-out infinite;
+    }
     .board-shell::before {
       content: '';
       position: absolute;
@@ -259,7 +263,29 @@
       opacity: 0.26;
       pointer-events: none;
     }
+    .board-shell.alarm-live::after {
+      content: 'ALARM LIVE';
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(47, 8, 10, 0.92);
+      border: 1px solid rgba(255, 124, 124, 0.36);
+      color: #ffb4b1;
+      font-size: 0.62rem;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      box-shadow: 0 0 12px rgba(255, 98, 98, 0.16);
+      z-index: 5;
+      pointer-events: none;
+    }
     .board-shell.shake { animation: boardshake 170ms linear 1; }
+    @keyframes alarmFrame {
+      0%, 100% { box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 18px 34px rgba(0,0,0,0.26), 0 0 0 1px rgba(255, 115, 115, 0.16), 0 0 24px rgba(255, 92, 92, 0.12); }
+      50% { box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03), 0 18px 34px rgba(0,0,0,0.26), 0 0 0 1px rgba(255, 132, 132, 0.28), 0 0 32px rgba(255, 106, 106, 0.22); }
+    }
 
     .board {
       display: grid;
@@ -465,6 +491,55 @@
       inset: 16%;
       border-radius: 999px;
       background: radial-gradient(circle, rgba(130,223,255,0.26), rgba(99,184,255,0.02) 72%);
+    }
+    .item-console .item-core,
+    .item-console-offline .item-core {
+      left: 18%;
+      right: 18%;
+      top: 18%;
+      bottom: 18%;
+      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(12, 22, 34, 0.96), rgba(28, 46, 64, 0.9));
+      box-shadow: inset 0 0 0 2px rgba(153, 225, 255, 0.12);
+    }
+    .item-console .item-top,
+    .item-console-offline .item-top {
+      left: 28%;
+      right: 28%;
+      top: 28%;
+      height: 18%;
+      border-radius: 6px;
+      background: linear-gradient(180deg, rgba(255, 153, 153, 0.9), rgba(150, 28, 46, 0.45));
+      box-shadow: 0 0 12px rgba(255, 98, 98, 0.26);
+    }
+    .item-console .item-detail,
+    .item-console-offline .item-detail {
+      left: 30%;
+      right: 30%;
+      bottom: 24%;
+      height: 10%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.12), rgba(120, 220, 255, 0.55), rgba(255,255,255,0.12));
+      opacity: 0.86;
+    }
+    .item-console .item-glow {
+      inset: 14%;
+      border-radius: 14px;
+      background: radial-gradient(circle, rgba(255, 110, 110, 0.2), rgba(255, 110, 110, 0) 72%);
+      animation: consoleAlarm 1.05s ease-in-out infinite;
+    }
+    .item-console-offline .item-top {
+      background: linear-gradient(180deg, rgba(188, 223, 236, 0.54), rgba(69, 89, 110, 0.28));
+      box-shadow: none;
+    }
+    .item-console-offline .item-glow {
+      inset: 16%;
+      border-radius: 14px;
+      background: radial-gradient(circle, rgba(148, 206, 228, 0.12), rgba(148, 206, 228, 0) 72%);
+    }
+    @keyframes consoleAlarm {
+      0%, 100% { opacity: 0.45; transform: scale(0.98); }
+      50% { opacity: 1; transform: scale(1.05); }
     }
 
     .sprite {
@@ -704,6 +779,10 @@
       box-shadow: inset 0 0 0 2px rgba(255, 225, 143, 0.34), 0 0 18px rgba(255, 225, 143, 0.18);
       background-image: radial-gradient(circle at center, rgba(255, 225, 143, 0.14), rgba(255, 225, 143, 0));
     }
+    .objective-target.alarm-objective {
+      box-shadow: inset 0 0 0 2px rgba(255, 122, 122, 0.42), 0 0 18px rgba(255, 98, 98, 0.22);
+      background-image: radial-gradient(circle at center, rgba(255, 112, 112, 0.18), rgba(255, 112, 112, 0));
+    }
     .objective-marker {
       position: absolute;
       right: 4px;
@@ -726,6 +805,12 @@
     @keyframes objectivePulse {
       0%, 100% { transform: scale(0.95); opacity: 0.78; }
       50% { transform: scale(1.08); opacity: 1; }
+    }
+    .objective-marker.alarm {
+      color: #ffb3b3;
+      border-color: rgba(255, 122, 122, 0.36);
+      box-shadow: 0 0 12px rgba(255, 92, 92, 0.24);
+      animation-duration: 0.9s;
     }
     .hpbar {
       position: absolute;
@@ -944,7 +1029,7 @@
 <body>
   <div class="app">
     <aside class="sidebar panel">
-      <div class="eyebrow">CyberPG v0.1.22</div>
+      <div class="eyebrow">CyberPG v0.1.26</div>
       <h1>One Room.<br/>Sharper Teeth.</h1>
       <p class="sub">A tougher Shattered Pixel Dungeon-inspired room: scout in the dark, snag the keycard, crack the cache chest, claim Volt Fang, survive the pressure, then escape.</p>
 
@@ -981,7 +1066,7 @@
         <div id="intentList"></div>
       </div>
 
-      <div class="inspect-tip">Hover a visible tile to preview damage or route. Click or tap a distant visible tile to lock the route readout, then click it again to advance. Gold pulse marker = current objective.</div>
+      <div class="inspect-tip">Hover a visible tile to preview damage or route, including incoming punish ranges. Click or tap a distant visible tile to lock the route readout, then click it again to advance. Gold pulse marker = current objective.</div>
 
       <div class="controls">
         <strong>Controls</strong><br/>
@@ -1027,7 +1112,7 @@
 
   <div id="overlay" class="overlay">
     <div class="overlay-card">
-      <div class="overlay-kicker">CyberPG v0.1.22</div>
+      <div class="overlay-kicker">CyberPG v0.1.26</div>
       <div id="overlayTitle" class="overlay-title">Room complete</div>
       <div id="overlayBody" class="overlay-body"></div>
       <div id="rewardGrid" class="reward-grid"></div>
@@ -1112,6 +1197,14 @@
       return rewardChoices.find(choice => choice.id === id)?.label || 'None';
     }
 
+    function makeEnemy(kind, x, y, { alert = false } = {}) {
+      if (kind === 'rat') return { id: crypto.randomUUID(), kind: 'rat', name: 'Sewer Rat', x, y, hp: 5, maxHp: 5, minAtk: 1, maxAtk: 2, alive: true, alert, corpseTurn: null };
+      if (kind === 'guard') return { id: crypto.randomUUID(), kind: 'guard', name: 'Fallen Guard', x, y, hp: 9, maxHp: 9, minAtk: 2, maxAtk: 3, alive: true, alert, lungeRange: 2, corpseTurn: null };
+      if (kind === 'seer') return { id: crypto.randomUUID(), kind: 'seer', name: 'Wire Seer', x, y, hp: 6, maxHp: 6, minAtk: 2, maxAtk: 4, alive: true, alert, range: 5, corpseTurn: null };
+      if (kind === 'hunter') return { id: crypto.randomUUID(), kind: 'hunter', name: 'Vault Hunter', x, y, hp: 7, maxHp: 7, minAtk: 2, maxAtk: 4, alive: true, alert, rushRange: 2, corpseTurn: null };
+      throw new Error(`Unknown enemy kind: ${kind}`);
+    }
+
     function freshState() {
       const tiles = [];
       const enemies = [];
@@ -1131,18 +1224,10 @@
           if (ch === 'K') { type = 'floor'; key = { x, y, taken: false }; }
           if (ch === 'C') { type = 'floor'; chest = { x, y, opened: false, hasSigil: true }; }
           if (ch === '@') { type = 'floor'; hero = { x, y, hp: 14, maxHp: 14, minAtk: 3, maxAtk: 5, hasKey: false, hasSigil: false, relic: 'Mono-Claw', title: 'Cyborg Kittygirl' }; }
-          if (ch === 'r') {
-            enemies.push({ id: crypto.randomUUID(), kind: 'rat', name: 'Sewer Rat', x, y, hp: 5, maxHp: 5, minAtk: 1, maxAtk: 2, alive: true, alert: false, corpseTurn: null });
-          }
-          if (ch === 'g') {
-            enemies.push({ id: crypto.randomUUID(), kind: 'guard', name: 'Fallen Guard', x, y, hp: 9, maxHp: 9, minAtk: 2, maxAtk: 3, alive: true, alert: false, lungeRange: 2, corpseTurn: null });
-          }
-          if (ch === 's') {
-            enemies.push({ id: crypto.randomUUID(), kind: 'seer', name: 'Wire Seer', x, y, hp: 6, maxHp: 6, minAtk: 2, maxAtk: 4, alive: true, alert: false, range: 5, corpseTurn: null });
-          }
-          if (ch === 'h') {
-            enemies.push({ id: crypto.randomUUID(), kind: 'hunter', name: 'Vault Hunter', x, y, hp: 7, maxHp: 7, minAtk: 2, maxAtk: 4, alive: true, alert: false, rushRange: 2, corpseTurn: null });
-          }
+          if (ch === 'r') enemies.push(makeEnemy('rat', x, y));
+          if (ch === 'g') enemies.push(makeEnemy('guard', x, y));
+          if (ch === 's') enemies.push(makeEnemy('seer', x, y));
+          if (ch === 'h') enemies.push(makeEnemy('hunter', x, y));
           tiles.push({ x, y, type, glyph: floorGlyphs[(x * 7 + y * 3) % floorGlyphs.length] });
         }
       }
@@ -1170,6 +1255,10 @@
           'Find the access keycard, crack the cache chest, lift the sigil chip, then earn the exit.'
         ],
         alarmRaised: false,
+        alarmConsole: { x: 13, y: 8, online: false, disabled: false },
+        reinforcementCountdown: null,
+        reinforcementWave: 0,
+        maxReinforcementWaves: 2,
         floaters: [],
         cacheLoot: null,
         lastSeenEnemies: {},
@@ -1254,6 +1343,66 @@
       pushFloater(state.hero.x, state.hero.y, 'VOLT FANG', 'heal');
       pushFloater(state.hero.x, state.hero.y, 'SIGIL', 'kill');
       log('You wrench Volt Fang free, socket the sigil core, and feel your bite sharpen instantly.');
+    }
+
+    function isAlarmConsoleTile(x, y) {
+      return state.alarmConsole && state.alarmConsole.x === x && state.alarmConsole.y === y;
+    }
+
+    function findAlarmSpawnSpot(candidates) {
+      for (const spot of candidates) {
+        if (!inBounds(spot.x, spot.y)) continue;
+        const tile = tileAt(spot.x, spot.y);
+        if (!tile || tile.type === 'wall' || tile.type === 'exit') continue;
+        if (enemyAt(spot.x, spot.y)) continue;
+        if (state.hero.x === spot.x && state.hero.y === spot.y) continue;
+        return spot;
+      }
+      return null;
+    }
+
+    function spawnAlarmWave() {
+      const wavePlans = [
+        {
+          label: 'Alarm relay spits a flanking rat pack in from the south lane.',
+          spawns: [
+            { kind: 'rat', candidates: [{ x: 2, y: 10 }, { x: 3, y: 10 }, { x: 1, y: 9 }] }
+          ]
+        },
+        {
+          label: 'Alarm relay opens the north hall again. A second Vault Hunter joins the chase.',
+          spawns: [
+            { kind: 'hunter', candidates: [{ x: 13, y: 1 }, { x: 12, y: 1 }, { x: 14, y: 2 }] }
+          ]
+        }
+      ];
+      const plan = wavePlans[state.reinforcementWave];
+      if (!plan) return false;
+      let spawned = 0;
+      for (const spawn of plan.spawns) {
+        const spot = findAlarmSpawnSpot(spawn.candidates);
+        if (!spot) continue;
+        state.enemies.push(makeEnemy(spawn.kind, spot.x, spot.y, { alert: true }));
+        spawned += 1;
+      }
+      state.reinforcementWave += 1;
+      state.reinforcementCountdown = state.reinforcementWave < state.maxReinforcementWaves ? 3 : null;
+      if (spawned) {
+        shakeBoard();
+        log(plan.label);
+        return true;
+      }
+      log('The alarm relay screams, but the choke points hold and nothing new gets in yet.');
+      return false;
+    }
+
+    function processAlarmCountdown() {
+      if (!state.alarmRaised || !state.alarmConsole?.online || state.gameOver || state.victory) return;
+      if (state.reinforcementCountdown === null) return;
+      state.reinforcementCountdown = Math.max(0, state.reinforcementCountdown - 1);
+      if (state.reinforcementCountdown === 0) {
+        spawnAlarmWave();
+      }
     }
 
     function shakeBoard() {
@@ -1414,25 +1563,36 @@
       if (state.chest && !state.chest.opened && state.hero.x === state.chest.x && state.hero.y === state.chest.y && state.hero.hasKey) {
         state.chest.opened = true;
         state.alarmRaised = true;
+        state.alarmConsole.online = true;
+        state.alarmConsole.disabled = false;
+        state.reinforcementCountdown = 3;
+        state.reinforcementWave = 0;
         const lootSpot = findChestLootDropSpot();
         state.cacheLoot = { x: lootSpot.x, y: lootSpot.y, taken: false };
         pushFloater(lootSpot.x, lootSpot.y, 'VOLT FANG', 'heal');
         if (!state.enemies.some(enemy => enemy.kind === 'hunter' && enemy.alive)) {
-          state.enemies.push({ id: crypto.randomUUID(), kind: 'hunter', name: 'Vault Hunter', x: 13, y: 1, hp: 7, maxHp: 7, minAtk: 2, maxAtk: 4, alive: true, alert: true, rushRange: 2, corpseTurn: null });
+          state.enemies.push(makeEnemy('hunter', 13, 1, { alert: true }));
           log('A Vault Hunter tears into the room from the north hall.');
         }
         for (const enemy of state.enemies) enemy.alert = true;
         shakeBoard();
-        log(`The cache chest splits wide and spits Volt Fang ${lootSpot.x === state.chest.x && lootSpot.y === state.chest.y ? 'into your square' : 'onto the floor nearby'}. The alarm answers instantly.`);
+        log(`The cache chest splits wide and spits Volt Fang ${lootSpot.x === state.chest.x && lootSpot.y === state.chest.y ? 'into your square' : 'onto the floor nearby'}. The alarm answers instantly and the relay terminal lights up red.`);
       }
       if (state.cacheLoot && !state.cacheLoot.taken && state.hero.x === state.cacheLoot.x && state.hero.y === state.cacheLoot.y) {
         claimCacheLoot();
+      }
+      if (state.alarmConsole?.online && isAlarmConsoleTile(state.hero.x, state.hero.y)) {
+        state.alarmConsole.online = false;
+        state.alarmConsole.disabled = true;
+        state.reinforcementCountdown = null;
+        pushFloater(state.hero.x, state.hero.y, 'RELAY CUT', 'kill');
+        log('You slam the relay terminal dark. No more reinforcements are coming through that channel.');
       }
     }
 
     function updateExitState() {
       const alive = state.enemies.filter(e => e.alive).length;
-      state.exit.unlocked = alive === 0 && state.hero.hasSigil;
+      state.exit.unlocked = alive === 0 && state.hero.hasSigil && !state.alarmConsole?.online;
     }
 
     function clearStraightLine(x1, y1, x2, y2) {
@@ -1511,8 +1671,23 @@
       if (state.victory) return 'Complete';
       if (!state.hero.hasKey) return 'Find keycard';
       if (!state.hero.hasSigil) return state.chest.opened ? 'Claim Volt Fang' : 'Open cache chest';
+      if (state.alarmConsole?.online) return 'Cut alarm relay';
       if (state.enemies.some(e => e.alive)) return 'Clear enemies';
       return 'Reach exit';
+    }
+
+    function nearestAliveEnemyTarget() {
+      const living = state.enemies.filter(enemy => enemy.alive);
+      if (!living.length) return null;
+      let best = null;
+      for (const enemy of living) {
+        const path = findPath(state.hero.x, state.hero.y, enemy.x, enemy.y, { allowGoalOccupied: true, ignoreEnemy: enemy });
+        const distanceScore = path?.length ?? Number.POSITIVE_INFINITY;
+        if (!best || distanceScore < best.distanceScore) {
+          best = { x: enemy.x, y: enemy.y, label: enemy.name, distanceScore };
+        }
+      }
+      return best;
     }
 
     function currentObjectiveTarget() {
@@ -1522,6 +1697,8 @@
         if (state.cacheLoot && !state.cacheLoot.taken) return { x: state.cacheLoot.x, y: state.cacheLoot.y, label: 'Volt Fang' };
         if (state.chest) return { x: state.chest.x, y: state.chest.y, label: 'Chest' };
       }
+      if (state.alarmConsole?.online) return { x: state.alarmConsole.x, y: state.alarmConsole.y, label: 'Alarm relay' };
+      if (state.enemies.some(enemy => enemy.alive)) return nearestAliveEnemyTarget();
       if (!state.exit?.unlocked) return null;
       return { x: state.exit.x, y: state.exit.y, label: 'Exit' };
     }
@@ -1545,6 +1722,9 @@
           : 'unseen';
       const firstStepThreats = directThreatsAt(path[0].x, path[0].y);
       const firstStepTag = firstStepThreats.length ? 'step threatened' : 'step clean';
+      if (target.label === 'Alarm relay' && state.reinforcementCountdown !== null) {
+        return `${target.label}: ${steps} step${steps === 1 ? '' : 's'} · ${firstStepTag} · wave in ${state.reinforcementCountdown} · ${seenTag}`;
+      }
       return `${target.label}: ${steps} step${steps === 1 ? '' : 's'} · ${firstStepTag} · ${seenTag}`;
     }
 
@@ -1637,10 +1817,16 @@
           ? 'Opened cache chest. Volt Fang got kicked loose nearby.'
           : 'Opened cache chest. Its prize has already been claimed.';
       }
+      if (isAlarmConsoleTile(x, y)) {
+        if (state.alarmConsole?.online) {
+          return `Alarm relay terminal. Step onto it to cut incoming reinforcements.${state.reinforcementCountdown !== null ? ` Next wave in ${state.reinforcementCountdown} turn${state.reinforcementCountdown === 1 ? '' : 's'}.` : ''}`;
+        }
+        if (state.alarmConsole?.disabled) return 'Alarm relay terminal. Burnt dark. That lane is dead now.';
+      }
       return '';
     }
 
-    function directThreatsAt(x, y, { skipEnemyId = null } = {}) {
+    function threatInfoAt(x, y, { skipEnemyId = null } = {}) {
       const heroPos = { x, y };
       const threats = [];
       for (const enemy of state.enemies) {
@@ -1648,41 +1834,75 @@
         const dist = distance(enemy, heroPos);
         const seesHero = dist <= 7 && lineOfSight(enemy.x, enemy.y, x, y);
         if (enemy.kind === 'seer' && seesHero && (enemy.x === x || enemy.y === y) && dist <= enemy.range) {
-          threats.push(`${enemy.name} zap line`);
+          const range = damageRange(enemy);
+          threats.push({ label: `${enemy.name} zap line`, min: range.min, max: range.max });
           continue;
         }
         if (enemy.kind === 'guard' && seesHero && dist === enemy.lungeRange && clearStraightLine(enemy.x, enemy.y, x, y)) {
-          threats.push(`${enemy.name} lunge`);
+          const range = damageRange(enemy, 1);
+          threats.push({ label: `${enemy.name} lunge`, min: range.min, max: range.max });
           continue;
         }
         if (enemy.kind === 'hunter' && seesHero && hunterRushReady(enemy, heroPos)) {
-          threats.push(`${enemy.name} rush carve`);
+          const range = damageRange(enemy, 1);
+          threats.push({ label: `${enemy.name} rush carve`, min: range.min, max: range.max });
           continue;
         }
         if (dist === 1) {
           const packBonus = enemy.kind === 'rat' && state.enemies.some(other => other !== enemy && other.alive && other.id !== skipEnemyId && distance(other, heroPos) === 1);
-          if (enemy.kind === 'hunter') threats.push(`${enemy.name} carve`);
-          else if (packBonus) threats.push(`${enemy.name} pack bite`);
-          else threats.push(`${enemy.name} melee`);
+          const bonus = enemy.kind === 'hunter' ? 1 : packBonus ? 1 : 0;
+          const label = enemy.kind === 'hunter' ? 'carve' : packBonus ? 'pack bite' : 'melee';
+          const range = damageRange(enemy, bonus);
+          threats.push({ label: `${enemy.name} ${label}`, min: range.min, max: range.max });
         }
       }
       return threats;
     }
 
+    function directThreatsAt(x, y, options = {}) {
+      return threatInfoAt(x, y, options).map(threat => threat.label);
+    }
+
+    function joinWithAnd(parts) {
+      if (!parts.length) return '';
+      if (parts.length === 1) return parts[0];
+      if (parts.length === 2) return `${parts[0]} and ${parts[1]}`;
+      return `${parts.slice(0, -1).join(', ')}, and ${parts[parts.length - 1]}`;
+    }
+
+    function threatTotalRange(threats) {
+      return threats.reduce((total, threat) => ({
+        min: total.min + threat.min,
+        max: total.max + threat.max
+      }), { min: 0, max: 0 });
+    }
+
+    function threatSummaryText(threats, { cleanText, prefix, singlePrefix = prefix, totalSuffix = ' total' } = {}) {
+      if (!threats.length) return cleanText;
+      const entries = threats.map(threat => `${threat.label} (${threat.min}-${threat.max})`);
+      if (threats.length === 1) return `${singlePrefix} ${entries[0]}.`;
+      const total = threatTotalRange(threats);
+      return `${prefix} ${joinWithAnd(entries)}; ${total.min}-${total.max}${totalSuffix}.`;
+    }
+
     function landingThreatText(x, y, options = {}) {
-      const threats = directThreatsAt(x, y, options);
-      if (!threats.length) return ' Landing there looks clean this turn.';
-      if (threats.length === 1) return ` Landing there is threatened by ${threats[0]}.`;
-      return ` Landing there is threatened by ${threats.slice(0, -1).join(', ')} and ${threats[threats.length - 1]}.`;
+      const threats = threatInfoAt(x, y, options);
+      return threatSummaryText(threats, {
+        cleanText: ' Landing there looks clean this turn.',
+        prefix: ' Landing there is threatened by',
+        totalSuffix: ' incoming'
+      });
     }
 
     function firstStepThreatText(route, options = {}) {
       if (!route?.length) return '';
       const nextStep = route[0];
-      const threats = directThreatsAt(nextStep.x, nextStep.y, options);
-      if (!threats.length) return ' First step stays clean.';
-      if (threats.length === 1) return ` First step is threatened by ${threats[0]}.`;
-      return ` First step is threatened by ${threats.slice(0, -1).join(', ')} and ${threats[threats.length - 1]}.`;
+      const threats = threatInfoAt(nextStep.x, nextStep.y, options);
+      return threatSummaryText(threats, {
+        cleanText: ' First step stays clean.',
+        prefix: ' First step is threatened by',
+        totalSuffix: ' incoming'
+      });
     }
 
     function intentData(enemy) {
@@ -1706,7 +1926,7 @@
           label: 'Zap',
           kind: 'zap',
           panel: `${enemy.name}: zap line ${base.range.min}-${base.range.max}`,
-          detail: `Beam for ${base.range.min}-${base.range.max}.`
+          detail: `Beam for ${base.range.min}-${base.range.max}. Break the row or column before you end turn.`
         };
       }
       if (enemy.kind === 'guard' && seesHero && dist === enemy.lungeRange && clearStraightLine(enemy.x, enemy.y, hero.x, hero.y)) {
@@ -1715,7 +1935,7 @@
           label: 'Lunge',
           kind: 'lunge',
           panel: `${enemy.name}: lunge setup ${base.range.min + 1}-${base.range.max + 1}`,
-          detail: `Lunge hit for ${base.range.min + 1}-${base.range.max + 1}.`
+          detail: `Lunge hit for ${base.range.min + 1}-${base.range.max + 1}. Sidestep the lane or crowd into melee to cancel it.`
         };
       }
       if (enemy.kind === 'hunter' && seesHero && hunterRushReady(enemy, hero)) {
@@ -1744,7 +1964,7 @@
           label: 'Retreat',
           kind: 'retreat',
           panel: `${enemy.name}: retreat`,
-          detail: 'Will try to back off.'
+          detail: 'Will try to back off. Stay close to deny it a clean beam lane.'
         };
       }
       return {
@@ -1809,9 +2029,16 @@
 
       const commitReady = Boolean(state.lockedTile && state.lockedTile.x === x && state.lockedTile.y === y && path.length);
       if (commitReady) {
-        summary += foe
-          ? ' Click again to advance one safe step toward pressure.'
-          : ' Click again to advance one step along this route.';
+        const firstStepThreats = path.length ? directThreatsAt(path[0].x, path[0].y).length : 0;
+        if (foe) {
+          summary += firstStepThreats
+            ? ' Click again to advance one threatened step toward pressure.'
+            : ' Click again to advance one clean step toward pressure.';
+        } else {
+          summary += firstStepThreats
+            ? ' Click again to advance one threatened step along this route.'
+            : ' Click again to advance one clean step along this route.';
+        }
       }
 
       return {
@@ -1832,11 +2059,20 @@
       if (state.introOpen && !state.started) return `Begin the run when you’re ready. Kitty ears up. First route matters. ${state.flasks ? `Starting flask charges: ${state.flasks}.` : ''}`.trim();
       if (state.victory) return 'Victory. Kittygirl out, sigil secured.';
       if (state.gameOver) return 'Defeat. Reset and route the room better.';
-      const holdThreats = directThreatsAt(state.hero.x, state.hero.y);
+      if (state.alarmConsole?.online) {
+        if (!state.hero.hasSigil) {
+          return `Alarm live. Claim Volt Fang first, then cut the relay terminal before another wave arrives in ${state.reinforcementCountdown ?? '?'} turn${state.reinforcementCountdown === 1 ? '' : 's'}.`;
+        }
+        return `Alarm relay still live. Cut it before the next wave in ${state.reinforcementCountdown ?? '?'} turn${state.reinforcementCountdown === 1 ? '' : 's'}, then finish the room.`;
+      }
+      const holdThreats = threatInfoAt(state.hero.x, state.hero.y);
       if (holdThreats.length) {
-        return holdThreats.length === 1
-          ? `Holding here means eating ${holdThreats[0]}. Move unless the trade is worth it.`
-          : `Holding here means eating ${holdThreats.slice(0, -1).join(', ')} and ${holdThreats[holdThreats.length - 1]}. Move unless the trade is worth it.`;
+        return `${threatSummaryText(holdThreats, {
+          cleanText: '',
+          prefix: 'Holding here means eating',
+          singlePrefix: 'Holding here means eating',
+          totalSuffix: ' if you stay'
+        })} Move unless the trade is worth it.`;
       }
       if (state.flasks > 0 && state.hero.hp <= Math.max(4, Math.floor(state.hero.maxHp * 0.45))) {
         return `You have ${state.flasks} flask charge${state.flasks === 1 ? '' : 's'} ready. F or the topbar button buys breathing room, costs the turn, and restores up to ${flaskHealAmount()} HP.`;
@@ -2024,13 +2260,16 @@
     function waitTurn() {
       if (state.introOpen && !state.started) beginRun();
       if (state.gameOver || state.victory) return;
-      const holdThreats = directThreatsAt(state.hero.x, state.hero.y);
+      const holdThreats = threatInfoAt(state.hero.x, state.hero.y);
       if (!holdThreats.length) {
         log('You wait and listen. No immediate punish line bites yet.');
-      } else if (holdThreats.length === 1) {
-        log(`You wait and listen. Holding here means eating ${holdThreats[0]}.`);
       } else {
-        log(`You wait and listen. Holding here means eating ${holdThreats.slice(0, -1).join(', ')} and ${holdThreats[holdThreats.length - 1]}.`);
+        log(`You wait and listen. ${threatSummaryText(holdThreats, {
+          cleanText: '',
+          prefix: 'Holding here means eating',
+          singlePrefix: 'Holding here means eating',
+          totalSuffix: ' if you stay'
+        })}`);
       }
       endTurn();
     }
@@ -2145,6 +2384,7 @@
     function endTurn() {
       updateExitState();
       for (const enemy of state.enemies) enemyTurn(enemy);
+      processAlarmCountdown();
       computeVisibility();
       markThreatTiles();
       updateExitState();
@@ -2165,6 +2405,8 @@
       if (state.chest && !state.chest.opened && tile.x === state.chest.x && tile.y === state.chest.y) return 'item-chest';
       if (state.cacheLoot && !state.cacheLoot.taken && tile.x === state.cacheLoot.x && tile.y === state.cacheLoot.y) return 'item-fang';
       if (state.chest && state.chest.opened && tile.x === state.chest.x && tile.y === state.chest.y) return 'item-chest-open';
+      if (state.alarmConsole?.online && isAlarmConsoleTile(tile.x, tile.y)) return 'item-console';
+      if (state.alarmConsole?.disabled && isAlarmConsoleTile(tile.x, tile.y)) return 'item-console-offline';
       return '';
     }
 
@@ -2210,6 +2452,7 @@
       markThreatTiles();
       const preview = activePreviewData();
       const objectiveTarget = currentObjectiveTarget();
+      boardShell.classList.toggle('alarm-live', Boolean(state.alarmConsole?.online));
       board.innerHTML = '';
 
       for (const tile of state.tiles) {
@@ -2240,6 +2483,7 @@
           if (preview?.targetKey === tileKey(tile.x, tile.y)) classes.push('inspect-focus');
           if (preview?.commitReady && preview?.targetKey === tileKey(tile.x, tile.y)) classes.push('route-commit');
           if (objectiveTarget && objectiveTarget.x === tile.x && objectiveTarget.y === tile.y) classes.push('objective-target');
+          if (objectiveTarget?.label === 'Alarm relay' && objectiveTarget.x === tile.x && objectiveTarget.y === tile.y) classes.push('alarm-objective');
         } else if (memoryEnemy) {
           classes.push('actor', memoryEnemy.kind, 'ghost');
         }
@@ -2295,8 +2539,8 @@
         }
         if (visibleNow && objectiveTarget && objectiveTarget.x === tile.x && objectiveTarget.y === tile.y) {
           const marker = document.createElement('div');
-          marker.className = 'objective-marker';
-          marker.textContent = '✦';
+          marker.className = `objective-marker ${objectiveTarget.label === 'Alarm relay' ? 'alarm' : ''}`.trim();
+          marker.textContent = objectiveTarget.label === 'Alarm relay' ? '!' : '✦';
           marker.setAttribute('aria-label', `${objectiveTarget.label} objective`);
           el.appendChild(marker);
         }
@@ -2328,7 +2572,15 @@
       objectiveEl.textContent = objectiveText();
       objectiveMetaEl.textContent = objectiveMetaText(objectiveTarget);
       keyStatusEl.textContent = state.hero.hasKey ? 'Taken' : 'Missing';
-      chestStatusEl.textContent = !state.hero.hasKey ? 'Sealed' : (state.cacheLoot && !state.cacheLoot.taken) ? 'Burst open' : state.chest.opened ? 'Opened' : 'Ready';
+      chestStatusEl.textContent = state.alarmConsole?.online
+        ? 'Alarm live'
+        : state.alarmConsole?.disabled
+          ? 'Relay cut'
+          : !state.hero.hasKey
+            ? 'Sealed'
+            : (state.cacheLoot && !state.cacheLoot.taken)
+              ? 'Burst open'
+              : state.chest.opened ? 'Opened' : 'Ready';
       relicStatusEl.textContent = (state.cacheLoot && !state.cacheLoot.taken) ? 'Dropped nearby' : state.hero.relic;
       legacyStatusEl.textContent = boonLabel(state.storedBoon);
       flaskStatusEl.textContent = `${state.flasks}`;
@@ -2336,8 +2588,13 @@
       statusLineEl.textContent = preview?.summary || statusText();
       startBtn.textContent = state.introOpen && !state.started ? 'Start run' : 'Run started';
       startBtn.disabled = !state.introOpen || state.started;
-      const holdThreats = directThreatsAt(state.hero.x, state.hero.y);
-      waitBtn.textContent = holdThreats.length ? `Wait turn · ${holdThreats.length} threat${holdThreats.length === 1 ? '' : 's'}` : 'Wait turn · safe';
+      const holdThreats = threatInfoAt(state.hero.x, state.hero.y);
+      if (!holdThreats.length) {
+        waitBtn.textContent = 'Wait turn · safe';
+      } else {
+        const total = threatTotalRange(holdThreats);
+        waitBtn.textContent = `Wait turn · ${total.min}-${total.max} dmg`;
+      }
       waitBtn.disabled = state.gameOver || state.victory;
       useFlaskBtn.disabled = !canUseFlask();
       renderIntentPanel();
